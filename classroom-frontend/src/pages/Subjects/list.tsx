@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Subjects = () => {
+const SubjectsList = () => {
   return (
     <div>
      Subjects 
@@ -8,4 +8,4 @@ const Subjects = () => {
   )
 }
 
-export default Subjects
+export default SubjectsList
