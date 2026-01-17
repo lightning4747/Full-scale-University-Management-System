@@ -1,0 +1,42 @@
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+.next/
+out/
+.refine/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local config
+*.local
+
+# Editor / OS files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temp / cache
+.cache/
+.tmp/
+*.swp
+*.swo
+
+.npmrc.local
