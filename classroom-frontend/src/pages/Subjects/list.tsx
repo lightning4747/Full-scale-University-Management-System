@@ -73,7 +73,9 @@ const SubjectsList = () => {
       filters: {
         permanent: [...departmentFilter, ...searchFilter]
       },
-      sorters: {},
+      sorters: {
+        initial: [{field: 'id', order: 'desc'}],
+      },
     } 
   });
   return (
