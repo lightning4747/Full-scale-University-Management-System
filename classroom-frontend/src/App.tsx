@@ -1,6 +1,7 @@
-import { GitHubBanner, Refine, WelcomePage } from "@refinedev/core";
+import { GitHubBanner, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import Dashboard from './pages/Dashboard'
 
 import routerProvider, {
   DocumentTitleHandler,
@@ -31,7 +32,7 @@ function App() {
               }}
             >
               <Routes>
-                <Route index element={<WelcomePage />} />
+                <Route index path = "/" element={<Dashboard />} />
               </Routes>
               <Toaster />
               <RefineKbar />
