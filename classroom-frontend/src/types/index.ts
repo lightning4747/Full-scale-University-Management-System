@@ -5,5 +5,5 @@ export type Subject = {
     department: string;
     description: string;
     createdAt: string;
-    updatedAt: string;
+    updatedAt?: string;
 }
