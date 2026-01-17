@@ -1,4 +1,4 @@
-import { GitHubBanner, Refine } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import Dashboard from './pages/Dashboard'
@@ -7,18 +7,20 @@ import routerProvider, {
   DocumentTitleHandler,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import "./App.css";
 import { Toaster } from "./components/refine-ui/notification/toaster";
 import { useNotificationProvider } from "./components/refine-ui/notification/use-notification-provider";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
+import {Layout} from './components/refine-ui/layout/layout'
 import { dataProvider } from "./providers/data";
+import {BookOpen, Home } from 'lucide-react'
+import Subjects from "./pages/Lists/Subjects";
 
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
-      <RefineKbarProvider>
+     <RefineKbarProvider>
         <ThemeProvider>
           <DevtoolsProvider>
             <Refine
@@ -30,9 +32,28 @@ function App() {
                 warnWhenUnsavedChanges: true,
                 projectId: "dpGD9O-dnu4kZ-8XEz6c",
               }}
+
+              resources={[
+               {              
+                name:"dashboard", list:'/', 
+                meta:{lable: "Home",icon: <Home />}
+               },
+               {
+                  name:"Subjects", list:'Subjects',
+                  create: 'Subject/create',
+                  meta: {lable: "Subjects", icon: <BookOpen/>}
+                }
+              ]}
             >
               <Routes>
-                <Route index path = "/" element={<Dashboard />} />
+                <Route element = {
+                  <Layout>
+                    <Outlet />
+                  </Layout>
+                }>
+                <Route  path = "/" element={<Dashboard />} />
+                <Route path = "Subjects" element ={<Subjects/>}></Route>
+                </Route>
               </Routes>
               <Toaster />
               <RefineKbar />
