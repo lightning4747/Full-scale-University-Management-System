@@ -24,6 +24,12 @@ import { Subject } from "@/types";
 const SubjectsList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('all');
+  const departmentFilter = selectedDepartment === 'all' ? [] : [
+    {field: 'department', operator: 'eq'as const, value: selectedDepartment},
+  ];
+  const searchFilter = searchQuery ? [
+    {field: 'name', operator: 'contains' as const, value: searchQuery}
+  ] : [];
   const subjectTable = useTable<Subject>({
     columns: useMemo<ColumnDef<Subject>[]>(()=> [
       {id:'code',
@@ -33,14 +39,40 @@ const SubjectsList = () => {
        cell: ({ getValue }) => (
         <Badge>{getValue<string>()}</Badge>
       ),
+      },
+      {
+        id:'name',
+        accessorKey: 'name',
+        size:200,
+        header: ()=> <p className='column-title ml-2'>Name</p>,
+        cell: ({getValue}) => (
+          <span className='text-foreground'>{getValue<string>()}</span>
+        ),
+        filterFn: 'includesString',
+      },
+      {
+        id:'department',
+        accessorKey: 'department',
+        size:250,
+        header: () => <p className='column-title ml-2'>Department</p>,
+        cell: ({ getValue}) => <Badge variant="secondary">{getValue<string>()}</Badge>
+      },
+      {
+        id:'description',
+        accessorKey: 'description',
+        size:300,
+        header: () => <p className='column-title ml-2'>Description</p>,
+        cell: ({ getValue}) => <span className='truncate line-clamp-2'>{getValue<string>()}</span>
       }
-    ],[]),
+],[]),
     refineCoreProps: {
       resource: 'subjects',
       pagination: {
         pageSize: 10,mode: 'server',
       },
-      filters: {},
+      filters: {
+        permanent: [...departmentFilter, ...searchFilter]
+      },
       sorters: {},
     } 
   });
