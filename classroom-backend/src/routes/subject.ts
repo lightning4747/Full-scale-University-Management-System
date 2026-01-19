@@ -1,7 +1,7 @@
 import { desc, eq, getTableColumns, ilike, or, sql, and } from "drizzle-orm";
 import express  from "express";
 import { departments, subjects } from "../db/schema";
-import { db } from "../db/db";
+import {db} from '../db/db'
 
 const router = express.Router();
 
@@ -60,3 +60,5 @@ router.get('/', async (req, res) => {
         res.status(500).json({error: "Failed to get subjects"});
     }
 })
+
+export default router;

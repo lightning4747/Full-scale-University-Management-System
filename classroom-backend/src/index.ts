@@ -1,10 +1,12 @@
 import express from 'express';
-
+import subjectsRouter from "./routes/subject"
 const app = express();
 const PORT = 8000;
 
 // JSON middleware
 app.use(express.json());
+
+app.use('/api/subjects', subjectsRouter)
 
 // Root GET route
 app.get('/', (req, res) => {
