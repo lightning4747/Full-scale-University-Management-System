@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
                                  res.status(200).json({
                                     data: subjectList,
                                     limit: limitPerPage,
-                                    totalL: totalCount,
+                                    total: totalCount,
                                     totalPage: Math.ceil(totalCount / limitPerPage)
                                  })
     }
