@@ -1,7 +1,14 @@
 import express from 'express';
-import subjectsRouter from "./routes/subject"
+import subjectsRouter from "./routes/subject";
+import cors from 'cors';
 const app = express();
 const PORT = 8000;
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}))
 
 // JSON middleware
 app.use(express.json());
