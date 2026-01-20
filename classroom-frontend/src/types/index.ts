@@ -3,7 +3,17 @@ export type Subject = {
     name: string;
     code: string;
     description: string;
-    department: string;
+    // flat department name (for convenience in some APIs)
+    department?: string;
+    // nested department object when joined from the backend
+    departments?: {
+        id: number;
+        name: string;
+        code: string;
+        description: string | null;
+        created_At?: string;
+        updated_At?: string;
+    };
     createdAt?: string;
 };
 
