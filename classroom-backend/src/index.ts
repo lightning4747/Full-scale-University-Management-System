@@ -1,32 +1,31 @@
-import express from 'express';
+import express from "express";
+import cors from "cors";
 import subjectsRouter from "./routes/subject";
-import cors from 'cors';
+
 const app = express();
 const PORT = 8000;
 
-if(!process.env.FRONTEND_URL) {
-  throw new Error('FRONTEND_URL is not set in .env file');
-}
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}))
+// CORS – correct for local development
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 // JSON middleware
 app.use(express.json());
 
-app.use('/api/subjects', subjectsRouter)
+// Routes
+app.use("/api/subjects", subjectsRouter);
 
-// Root GET route
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the University Management System API' });
+// Root
+app.get("/", (_req, res) => {
+  res.json({ message: "University Management System API" });
 });
 
 // Start server
 app.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
-  console.log(`Server is running on ${url}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
-
