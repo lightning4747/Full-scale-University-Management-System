@@ -19,14 +19,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { teachers, subjects } from '@/constants';
 
 const Create = () => {
@@ -39,101 +34,162 @@ const Create = () => {
       action: 'create'
     },
     defaultValues: {
-      status: 'active' as const,
       name: '',
       description: '',
       subjectId: 0,
       teacherId: '',
       capacity: 0,
-      bannerUrl: '',
-      bannerCldPubId: '',
-      inviteCode: ''
+      status: 'active' as const,
+      bannerUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      bannerCldPubId: 'default-banner'
     }
   });
 
-  const { saveButtonProps } = form;
+  const { handleSubmit, control, formState: { isSubmitting } } = form;
+
+  const onSubmit = function onSubmit(values: z.infer<typeof classSchema>) {
+    try {
+      console.log(values);
+    }
+    catch (e) {
+      console.error("Error creating class", e);
+    }
+
+  }
   return (
     <CreateView className='class-view'>
-      <Breadcrumb/>
+      <Breadcrumb />
 
-        <h1 className='title-page'>Create a page</h1>
+      <h1 className='title-page'>Create a page</h1>
 
-        <div className='intro-row'>
-            <p>Provide the required information given below to add a class.</p>
-            <Button onClick={back}>Go back </Button>
-        </div>
-        <Separator></Separator>
+      <div className='intro-row'>
+        <p>Provide the required information given below to add a class.</p>
+        <Button onClick={back}>Go back </Button>
+      </div>
+      <Separator></Separator>
 
-        <div className='my-4 flex items-center'>
-          <Card className='class-form-card'>
-            <CardHeader className='relative z-10'>
-                <CardTitle className='text-2xl pb-10 font-bold'>
-                  Fill out the form
-                </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+      <div className='my-4 flex items-center'>
+        <Card className='class-form-card'>
+          <CardHeader className='relative z-10'>
+            <CardTitle className='text-2xl pb-10 font-bold'>
+              Fill out the form
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
 
-        <Separator/>
+      <Separator />
 
-        <CardContent className='mt-7'>
-          <Form {...form}>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              form.handleSubmit((values) => {
-                console.log('Form values:', values);
-                // Refine will handle the submission via saveButtonProps
-              })(e);
-            }} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Class Name */}
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Class Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g., Introduction to Computer Science" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+      <CardContent className='mt-7'>
+        <Form {...form}>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className='space-y-5'>
+              <Label>
+                Banner Image <span className='text-orange-600'>*</span>
+              </Label>
 
-                {/* Capacity */}
-                <FormField
-                  control={form.control}
-                  name="capacity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Capacity</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="number" 
-                          placeholder="e.g., 30" 
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <p>Upload Image widget</p>
+            </div>
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Class Name <span className='text-orange-600'>*</span></FormLabel>
+                  <FormControl>
+                    <Input placeholder="Introduction to Computer - section A" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* Description */}
+            <FormField
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description <span className='text-orange-600'>*</span></FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide a brief description of the class..."
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className='grid sm:grid-cols-2 gap-4'>
               <FormField
-                control={form.control}
-                name="description"
+                control={control}
+                name="subjectId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Subject <span className='text-orange-600'>*</span></FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a subject" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {subjects.map((subject) => (
+                          <SelectItem key={subject.id} value={subject.id.toString()}>
+                            {subject.name} ({subject.code})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="teacherId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teacher <span className='text-orange-600'>*</span></FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a teacher" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {teachers.map((teacher) => (
+                          <SelectItem key={teacher.id} value={teacher.id}>
+                            {teacher.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className='grid sm:grid-cols-2 gap-4'>
+              <FormField
+                control={control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Capacity <span className='text-orange-600'>*</span></FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Enter a detailed description of the class..."
-                        className="min-h-24"
-                        {...field} 
+                      <Input
+                        type="number"
+                        placeholder="Maximum number of students"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -141,161 +197,37 @@ const Create = () => {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Subject */}
-                <FormField
-                  control={form.control}
-                  name="subjectId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subject</FormLabel>
-                      <Select 
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a subject" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {subjects.map((subject) => (
-                            <SelectItem key={subject.id} value={subject.id.toString()}>
-                              {subject.name} ({subject.code})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Teacher */}
-                <FormField
-                  control={form.control}
-                  name="teacherId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teacher</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a teacher" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {teachers.map((teacher) => (
-                            <SelectItem key={teacher.id} value={teacher.id}>
-                              {teacher.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Status */}
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Invite Code (Optional) */}
-                <FormField
-                  control={form.control}
-                  name="inviteCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Invite Code (Optional)</FormLabel>
+              <FormField
+                control={control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status <span className='text-orange-600'>*</span></FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <Input placeholder="Auto-generated if left empty" {...field} />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormDescription>
-                        Leave empty to auto-generate an invite code
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Banner URL */}
-              <FormField
-                control={form.control}
-                name="bannerUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Banner URL</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="url" 
-                        placeholder="https://example.com/banner.jpg" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      URL of the class banner image
-                    </FormDescription>
+                      <SelectContent>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {/* Banner Cloudinary Public ID */}
-              <FormField
-                control={form.control}
-                name="bannerCldPubId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Banner Cloudinary Public ID</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="cloudinary_public_id" 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Cloudinary public ID for the banner image
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Submit Button */}
-              <div className="flex justify-end gap-4 pt-4">
-                <Button type="button" variant="outline" onClick={back}>
-                  Cancel
-                </Button>
-                <Button type="submit" {...saveButtonProps}>
-                  {saveButtonProps.disabled ? "Creating..." : "Create Class"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
+            </div>
+            <div className="flex justify-end gap-4">
+              <Button type="button" variant="outline" onClick={back}>
+                Cancel
+              </Button>
+              <Button type="submit">Submit</Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
     </CreateView>
   )
 }
