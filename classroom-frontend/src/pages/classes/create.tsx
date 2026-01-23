@@ -1,28 +1,29 @@
-import {CreateView} from "@/components/refine-ui/views/create-view.tsx";
-import {Breadcrumb} from "@/components/refine-ui/layout/breadcrumb.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {useBack} from "@refinedev/core";
-import {Separator} from "@/components/ui/separator.tsx";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx"
+import { Breadcrumb } from '@/components/refine-ui/layout/breadcrumb';
+import { CreateView } from '@/components/refine-ui/views/create-view';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { useBack } from '@refinedev/core';
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import {classSchema} from "@/lib/schema.ts";
-import * as z from "zod";
-
+import { useForm } from "@refinedev/react-hook-form"
+import React from 'react'
+import { classSchema } from '@/lib/schema';
+import * as z from 'zod';
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {Label} from "@/components/ui/label.tsx";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
-import {Textarea} from "@/components/ui/textarea.tsx";
-import {Loader2} from "lucide-react";
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { teachers, subjects } from '@/constants';
+import { Loader2 } from 'lucide-react';
 
 
 const Create = () => {
