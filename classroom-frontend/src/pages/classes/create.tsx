@@ -6,45 +6,45 @@ import { Separator } from '@/components/ui/separator';
 import { useBack } from '@refinedev/core';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "@refinedev/react-hook-form"
-import React from 'react'
 import { classSchema } from '@/lib/schema';
 import * as z from 'zod';
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { teachers, subjects } from '@/constants';
 import { Loader2 } from 'lucide-react';
+import UploadWidget from '@/components/uploadwidget'
 
 
 const Create = () => {
     const back = useBack();
 
-    const form = useForm({     
-      resolver: zodResolver(classSchema),     
-      refineCoreProps: {  
-         resource: 'class',       
-         action: 'create'     },    
-         defaultValues: {       
-            name: '',       
-            description: '',       
-            subjectId: 0,       
-            teacherId: '',       
-            capacity: 0,       
-            status: 'active' as const,       
-            bannerUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',       
-            bannerCldPubId: 'default-banner'     
-          }   
-        });
+    const form = useForm({
+        resolver: zodResolver(classSchema),
+        refineCoreProps: {
+            resource: 'class',
+            action: 'create'
+        },
+        defaultValues: {
+            name: '',
+            description: '',
+            subjectId: 0,
+            teacherId: '',
+            capacity: 0,
+            status: 'active' as const,
+            bannerUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+            bannerCldPubId: 'default-banner'
+        }
+    });
     const {
         handleSubmit,
         formState: { isSubmitting },
@@ -112,8 +112,7 @@ const Create = () => {
                                     <Label>
                                         Banner Image <span className="text-orange-600">*</span>
                                     </Label>
-
-                                    <p>Upload image widget</p>
+                                    <UploadWidget />
                                 </div>
 
                                 <FormField
