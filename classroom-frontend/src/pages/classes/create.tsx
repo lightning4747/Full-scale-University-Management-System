@@ -29,6 +29,7 @@ import { Loader2 } from "lucide-react";
 import { classSchema } from "@/lib/schema";
 import UploadWidget from "@/components/uploadwidget";
 import { Subject, User } from "@/types";
+import { MOCK_SUBJECTS, MOCK_TEACHERS } from "@/constants/mock-data";
 import z from "zod";
 
 const ClassesCreate = () => {
@@ -90,10 +91,15 @@ const ClassesCreate = () => {
     },
   });
 
-  const teachers = teachersQuery.data?.data || [];
+  // Use mock data as fallback when API fails
+  const teachers = teachersQuery.isError || !teachersQuery.data?.data?.length
+    ? MOCK_TEACHERS
+    : teachersQuery.data.data;
   const teachersLoading = teachersQuery.isLoading;
 
-  const subjects = subjectsQuery.data?.data || [];
+  const subjects = subjectsQuery.isError || !subjectsQuery.data?.data?.length
+    ? MOCK_SUBJECTS
+    : subjectsQuery.data.data;
   const subjectsLoading = subjectsQuery.isLoading;
 
   return (

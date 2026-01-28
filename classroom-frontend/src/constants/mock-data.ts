@@ -1,4 +1,52 @@
-import { Subject } from "@/types";
+import { Subject, User, UserRole } from "@/types";
+
+export const MOCK_TEACHERS: User[] = [
+  {
+    id: "teacher-1",
+    name: "Dr. Sarah Johnson",
+    email: "sarah.johnson@university.edu",
+    role: UserRole.TEACHER,
+    department: "Computer Science",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "teacher-2",
+    name: "Prof. Michael Chen",
+    email: "michael.chen@university.edu",
+    role: UserRole.TEACHER,
+    department: "Mathematics",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "teacher-3",
+    name: "Dr. Emily Rodriguez",
+    email: "emily.rodriguez@university.edu",
+    role: UserRole.TEACHER,
+    department: "Physics",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "teacher-4",
+    name: "Prof. David Kim",
+    email: "david.kim@university.edu",
+    role: UserRole.TEACHER,
+    department: "Chemistry",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "teacher-5",
+    name: "Dr. Amanda Foster",
+    email: "amanda.foster@university.edu",
+    role: UserRole.TEACHER,
+    department: "Biology",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
 
 export const MOCK_SUBJECTS: Subject[] = [
   {
