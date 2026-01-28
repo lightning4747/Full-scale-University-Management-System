@@ -8,6 +8,13 @@
       "when": 1768839390591,
       "tag": "0000_sparkling_karnak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769615547081,
+      "tag": "0001_loose_spirit",
+      "breakpoints": true
     }
   ]
 }
