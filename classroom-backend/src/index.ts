@@ -1,9 +1,13 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import subjectsRouter from "./routes/subject";
+import securityMiddleWare from "./middleware/security";
 
 const app = express();
 const PORT = 8000;
+
+app.set('trust proxy', true);
 
 // CORS – configurable via environment variables
 const getAllowedOrigins = (): string | string[] | ((origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => void) => {
@@ -31,16 +35,21 @@ const getAllowedOrigins = (): string | string[] | ((origin: string | undefined, 
   return originsEnv.trim();
 };
 
-app.use(
-  cors({
-    origin: getAllowedOrigins(),
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+
+app.use(cors({
+  origin: getAllowedOrigins(), // frontend origin
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+
 
 // JSON middleware
 app.use(express.json());
+
+//middleware
+app.use(securityMiddleWare);
 
 // Routes
 app.use("/api/subjects", subjectsRouter);
