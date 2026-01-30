@@ -1,3 +1,2 @@
-type RateLimitRole = useRoles | 'guest';
-
 type UserRoles = "admin" | "teacher" | "student";
+type RateLimitRole = UserRoles | "guest";

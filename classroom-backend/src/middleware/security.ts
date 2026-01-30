@@ -53,7 +53,7 @@ const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) 
         }
         
         if(decision.isDenied() && decision.reason.isRateLimit()) {
-            return res.status(403).json({error: "Forbidden", message});
+            return res.status(429).json({error: "Forbidden", message});
         }
         next();
     }   
