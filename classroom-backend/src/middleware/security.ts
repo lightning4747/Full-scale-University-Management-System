@@ -1,10 +1,9 @@
 import { ArcjetNodeRequest, slidingWindow } from "@arcjet/node";
-import { Client } from "@neondatabase/serverless";
 import type {Request, Response, NextFunction } from "express";
 import aj from "../config/arcjet"
 
 const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) => {
-    if(process.env.NODE_ENV !== 'test') return next();
+    if(process.env.NODE_ENV === 'test') return next();
 
     try {
         const role: RateLimitRole = req.user?.role ?? 'guest';
@@ -44,10 +43,25 @@ const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) 
         }
 
         const decision = await client.protect(arcjetRequest);
+        
+        if(decision.isDenied() && decision.reason.isBot()) {
+            return res.status(403).json({error: "Forbidden", message: "Automated requestes are not allowed"});
+        }
+        
+        if(decision.isDenied() && decision.reason.isShield()) {
+            return res.status(403).json({error: "Forbidden", message: "Request is blocked by security policy"});
+        }
+        
+        if(decision.isDenied() && decision.reason.isRateLimit()) {
+            return res.status(403).json({error: "Forbidden", message});
+        }
+        next();
+    }   
 
-    }
     catch (e) {
         console.error('Arcjet middleWare error: ', e);
         res.status(500).json({error: "Internal error", message : "Something went wrong with security middleware"});
     }
 }
+
+export default securityMiddleWare;
