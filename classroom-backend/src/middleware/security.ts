@@ -3,7 +3,9 @@ import type {Request, Response, NextFunction } from "express";
 import aj from "../config/arcjet"
 
 const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) => {
-    if(process.env.NODE_ENV === 'test') return next();
+    if (req.method === "OPTIONS") return next();
+    if(process.env.NODE_ENV == 'test') return next();
+
 
     try {
         const role: RateLimitRole = req.user?.role ?? 'guest';
@@ -36,11 +38,14 @@ const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) 
         )
 
         const arcjetRequest: ArcjetNodeRequest = {
-            headers:req.headers,
-            method:req.method,
-            url:req.originalUrl ?? req.url,
-            socket: {remoteAddress: req.socket.remoteAddress ?? req.ip ?? '0.0.0.0'}
-        }
+            headers: req.headers ?? {},
+            method: req.method ?? "GET",
+            url: req.originalUrl || req.url || "/",
+            socket: {
+              remoteAddress: req.ip || req.socket?.remoteAddress || "127.0.0.1",
+            },
+          };
+          
 
         const decision = await client.protect(arcjetRequest);
         
@@ -61,6 +66,7 @@ const securityMiddleWare = async (req:Request, res:Response, next:NextFunction) 
     catch (e) {
         console.error('Arcjet middleWare error: ', e);
         res.status(500).json({error: "Internal error", message : "Something went wrong with security middleware"});
+        next()
     }
 }
 
