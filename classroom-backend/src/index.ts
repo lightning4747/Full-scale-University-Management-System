@@ -6,6 +6,8 @@ import securityMiddleWare from "./middleware/security";
 import {toNodeHandler} from "better-auth/node"
 import { auth } from "./lib/auth";
 import { webcrypto } from 'node:crypto';
+import AgentAPI from "apminsight";
+AgentAPI.config()
 
 if (!globalThis.crypto) {
   (globalThis as any).crypto = webcrypto;
