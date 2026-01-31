@@ -3,6 +3,13 @@ import express from "express";
 import cors from "cors";
 import subjectsRouter from "./routes/subject";
 import securityMiddleWare from "./middleware/security";
+import {toNodeHandler} from "better-auth/node"
+import { auth } from "./lib/auth";
+import { webcrypto } from 'node:crypto';
+
+if (!globalThis.crypto) {
+  (globalThis as any).crypto = webcrypto;
+}
 
 const app = express();
 const PORT = 8000;
@@ -43,7 +50,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-
+app.all('/api/auth/*splat', toNodeHandler(auth));
 
 // JSON middleware
 app.use(express.json());
