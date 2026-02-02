@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import subjectsRouter from "./routes/subject";
-import securityMiddleWare from "./middleware/security";
+import subjectsRouter from "./routes/subject.js";
+import securityMiddleWare from "./middleware/security.js";
 import {toNodeHandler} from "better-auth/node"
-import { auth } from "./lib/auth";
+import { auth } from "./lib/auth.js";
 import { webcrypto } from 'node:crypto';
 import AgentAPI from "apminsight";
 AgentAPI.config()
