@@ -1,12 +1,13 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import subjectsRouter from "./routes/subject.js";
 import securityMiddleWare from "./middleware/security.js";
 import {toNodeHandler} from "better-auth/node"
 import { auth } from "./lib/auth.js";
 import { webcrypto } from 'node:crypto';
 import AgentAPI from "apminsight";
+import subjectsRouter from "./routes/subject.js";
+import usersRouter from "./routes/user.js";
 AgentAPI.config()
 
 if (!globalThis.crypto) {
@@ -62,6 +63,10 @@ app.use(securityMiddleWare);
 
 // Routes
 app.use("/api/subjects", subjectsRouter);
+
+// Users routes
+app.use("/api/users", usersRouter);
+
 
 // Root
 app.get("/", (_req, res) => {
