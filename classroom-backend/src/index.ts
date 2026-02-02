@@ -8,6 +8,7 @@ import { webcrypto } from 'node:crypto';
 import AgentAPI from "apminsight";
 import subjectsRouter from "./routes/subject.js";
 import usersRouter from "./routes/user.js";
+import classesRouter from "./routes/classes.js";
 AgentAPI.config()
 
 if (!globalThis.crypto) {
@@ -67,6 +68,8 @@ app.use("/api/subjects", subjectsRouter);
 // Users routes
 app.use("/api/users", usersRouter);
 
+// Classes routes
+app.use("/api/classes", classesRouter);
 
 // Root
 app.get("/", (_req, res) => {
