@@ -46,16 +46,27 @@ const options: CreateDataProviderOptions = {
         const pageSize = pagination?.pageSize ?? 10;
 
         const params: Record<string, string | number> = { page, limit: pageSize};
-
         filters?.forEach((filter) => {
-          const field = 'field' in filter ? filter.field: '';
+          const field = 'field' in filter ? filter.field : '';
           const value = String(filter.value);
 
-          if(resource === 'subjects') {
-            if(field === 'department') params.department = value;
-            if(field === 'name' || field === 'code') params.search = value;
+          // Existing logic for subjects
+          if (resource === 'subjects') {
+            if (field === 'department') params.department = value;
+            if (field === 'name' || field === 'code') params.search = value;
           }
-        })
+
+          // ADD THIS BLOCK BELOW:
+          if (resource === 'classes') {
+            if (field === 'name') params.search = value;
+            if (field === 'subject') params.subject = value;
+            
+            // This is the specific line that fixes the teacher filter
+            if (field === 'teacher' || field === 'teacherId') {
+              params.teacher = value;
+            }
+          }
+        });
         return params;
       },
 
