@@ -18,7 +18,6 @@ import { CreateButton } from "@/components/refine-ui/buttons/create";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { ShowButton } from "@/components/refine-ui/buttons/show";
-
 import { Subject, User } from "@/types";
 
 type ClassListItem = {
@@ -140,7 +139,7 @@ const ClassesList = () => {
             View
           </ShowButton>
         ),
-      },
+      }
     ],
     []
   );
