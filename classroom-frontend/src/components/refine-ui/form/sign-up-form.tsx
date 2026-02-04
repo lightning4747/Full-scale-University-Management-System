@@ -144,7 +144,6 @@ export const SignUpForm = () => {
             </div>
 
             <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
-              <Label>I am a</Label>
               <div className={cn("grid", "grid-cols-2", "gap-3")}>
                 {ROLE_OPTIONS.map((option) => (
                   <button
