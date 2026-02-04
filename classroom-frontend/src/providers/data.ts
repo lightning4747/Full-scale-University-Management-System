@@ -56,7 +56,6 @@ const options: CreateDataProviderOptions = {
             if (field === 'name' || field === 'code') params.search = value;
           }
 
-          // ADD THIS BLOCK BELOW:
           if (resource === 'classes') {
             if (field === 'name') params.search = value;
             if (field === 'subject') params.subject = value;
@@ -98,7 +97,7 @@ const options: CreateDataProviderOptions = {
       mapResponse: async (response) => {
         const json: GetOneResponse = await response.json();
 
-        return json.data ?? [];
+        return json.data ?? {};
       }
     }
 }

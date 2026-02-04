@@ -56,8 +56,8 @@ const ClassesShow = () => {
 
             <div className='banner'>
                 {
-                    classDetails.bannerUrl
-                        ? <AdvancedImage alt="Class Banner" cldImg={bannerPhoto(classDetails.bannerCldPubId ?? "", classDetails.name)}></AdvancedImage>
+                    classDetails.bannerCldPubId
+                        ? <AdvancedImage alt="Class Banner" cldImg={bannerPhoto(classDetails.bannerCldPubId , classDetails.name)}></AdvancedImage>
                         : <div className='placeholder'></div>
                 }
             </div>
@@ -148,4 +148,4 @@ const ClassesShow = () => {
     )
 }
 
-export default ClassesShow
+export default ClassesShow;
