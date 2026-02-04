@@ -2,7 +2,8 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import securityMiddleWare from "./middleware/security.js";
-import {toNodeHandler} from "better-auth/node"
+import sessionMiddleware from "./middleware/session.js";
+import { toNodeHandler } from "better-auth/node"
 import { auth } from "./lib/auth.js";
 import { webcrypto } from 'node:crypto';
 import AgentAPI from "apminsight";
@@ -59,7 +60,10 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 // JSON middleware
 app.use(express.json());
 
-//middleware
+// Session middleware - extracts user from session for role-based rate limiting
+app.use(sessionMiddleware);
+
+// Security/Rate-limiting middleware
 app.use(securityMiddleWare);
 
 // Routes
