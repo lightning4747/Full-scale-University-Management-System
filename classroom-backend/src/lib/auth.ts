@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 import { db } from "../db/db.js";
 import * as schema from "../db/schema/auth.js"
 
@@ -27,27 +28,35 @@ export const auth = betterAuth({
         }
     },
     hooks: {
-        before: [
-            {
-                matcher: (ctx) => ctx.path === "/sign-up/email",
-                handler: async (ctx) => {
-                    const body = ctx.body as { email?: string; role?: string } | undefined;
-                    const requestedRole = body?.role;
-                    const email = body?.email;
-
-                    // If someone tries to register as admin but email doesn't match, reject
-                    if (requestedRole === "admin" && email !== ADMIN_EMAIL) {
-                        throw new Error("Only the designated admin email can register as admin.");
-                    }
-
-                    // If the admin email is used, automatically set role to admin
-                    if (email === ADMIN_EMAIL && ctx.body) {
-                        (ctx.body as { role?: string }).role = "admin";
-                    }
-
-                    return { context: ctx };
-                }
+        before: createAuthMiddleware(async (ctx) => {
+            // Only apply to sign-up endpoint
+            if (ctx.path !== "/sign-up/email") {
+                return;
             }
-        ]
+
+            const body = ctx.body as { email?: string; role?: string } | undefined;
+            const requestedRole = body?.role;
+            const email = body?.email;
+
+            // If someone tries to register as admin but email doesn't match, reject
+            if (requestedRole === "admin" && email !== ADMIN_EMAIL) {
+                throw new APIError("BAD_REQUEST", {
+                    message: "Only the designated admin email can register as admin."
+                });
+            }
+
+            // If the admin email is used, automatically set role to admin
+            if (email === ADMIN_EMAIL) {
+                return {
+                    context: {
+                        ...ctx,
+                        body: {
+                            ...ctx.body,
+                            role: "admin"
+                        }
+                    }
+                };
+            }
+        })
     }
 });
