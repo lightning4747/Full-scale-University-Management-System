@@ -2,7 +2,6 @@ import express from "express";
 import { db } from "../db/db.js";
 import { classes, departments, subjects, user } from '../db/schema/index.js'
 import { and, eq, getTableColumns, ilike, or, sql, desc } from "drizzle-orm";
-import { error } from "node:console";
 
 const router = express.Router();
 
@@ -117,11 +116,11 @@ router.get("/:id", async (req, res) => {
         .from(classes)
         .leftJoin(subjects, eq(classes.subjectId, subjects.id))
         .leftJoin(user, eq(classes.teacherId, user.id))
-        .leftJoin(departments, eq(subjects.departmentId,user.id))
+        .leftJoin(departments, eq(subjects.departmentId,departments.id))
         .where(eq(classes.id, classId))
 
         if(!classData) return res.status(404).json({error: "class not found"});
-        
+
         res.status(200).json({data: classData});
     }
     catch (error) {

@@ -61,7 +61,6 @@ const options: CreateDataProviderOptions = {
             if (field === 'name') params.search = value;
             if (field === 'subject') params.subject = value;
             
-            // This is the specific line that fixes the teacher filter
             if (field === 'teacher' || field === 'teacherId') {
               params.teacher = value;
             }
