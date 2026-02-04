@@ -80,7 +80,7 @@ const ClassesShow = () => {
         }
         data-status={classDetails.status}
       >
-        {(classDetails.status).toUpperCase()}
+        {(classDetails.status ?? "").toUpperCase()}
       </Badge>
     </div>
   </div>
