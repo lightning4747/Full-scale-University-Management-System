@@ -22,11 +22,15 @@ import {
   useRefineOptions,
   useRegister,
 } from "@refinedev/core";
+import { ROLE_OPTIONS, USER_ROLES } from "@/constants";
+import { UserRole } from "@/types";
 
 export const SignUpForm = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
 
   const { open } = useNotification();
 
@@ -51,8 +55,10 @@ export const SignUpForm = () => {
     }
 
     register({
+      name,
       email,
       password,
+      role,
     });
   };
 
@@ -114,6 +120,18 @@ export const SignUpForm = () => {
         <CardContent className={cn("px-0")}>
           <form onSubmit={handleSignUp}>
             <div className={cn("flex", "flex-col", "gap-2")}>
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your full name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -123,6 +141,37 @@ export const SignUpForm = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+            </div>
+
+            <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
+              <Label>I am a</Label>
+              <div className={cn("grid", "grid-cols-2", "gap-3")}>
+                {ROLE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setRole(option.value as UserRole)}
+                    className={cn(
+                      "flex",
+                      "flex-col",
+                      "items-center",
+                      "justify-center",
+                      "gap-2",
+                      "p-4",
+                      "rounded-lg",
+                      "border-2",
+                      "transition-all",
+                      "duration-200",
+                      role === option.value
+                        ? "border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400"
+                        : "border-muted-foreground/20 hover:border-muted-foreground/40"
+                    )}
+                  >
+                    <option.icon className={cn("w-6", "h-6")} />
+                    <span className={cn("font-medium")}>{option.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div
