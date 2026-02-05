@@ -14,12 +14,12 @@ export const authProvider: AuthProvider = {
       try {
         if (params.providerName === "google") {
           await authClient.signIn.social({
-            provider: "google",
+            provider: "google" as const,
             callbackURL: window.location.origin + "/",
           });
         } else if (params.providerName === "github") {
           await authClient.signIn.social({
-            provider: "github",
+            provider: "github" as const,
             callbackURL: window.location.origin + "/",
           });
         }
@@ -90,12 +90,12 @@ export const authProvider: AuthProvider = {
       try {
         if (params.providerName === "google") {
           await authClient.signIn.social({
-            provider: "google",
+            provider: "google" as const,
             callbackURL: window.location.origin + "/",
           });
         } else if (params.providerName === "github") {
           await authClient.signIn.social({
-            provider: "github",
+            provider: "github" as const,
             callbackURL: window.location.origin + "/",
           });
         }
