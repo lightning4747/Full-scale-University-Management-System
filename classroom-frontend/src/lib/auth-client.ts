@@ -5,7 +5,7 @@ import { USER_ROLES } from "../constants";
 // The backend auth routes are at http://localhost:8000/api/auth/*
 export const authClient = createAuthClient({
   // Base URL should be the root of the backend server (without /api)
-  baseURL: import.meta.env.VITE_BACKEND_BASE_URL?.replace(/\/api$/, "") || "http://localhost:8000",
+  baseURL: import.meta.env.VITE_BACKEND_BASE_URL?.replace(/\/api\/?$/, "") || "http://localhost:8000",
 
   // This must match the basePath configured in the backend's betterAuth config
   basePath: "/api/auth",
