@@ -1,24 +1,53 @@
 import type { AuthProvider } from "@refinedev/core";
-import { User, SignUpPayload } from "@/types";
+import { User, SignUpPayload, UserRole } from "@/types";
 import { authClient } from "@/lib/auth-client";
 
 export const authProvider: AuthProvider = {
-  register: async ({
-    email,
-    password,
-    name,
-    role,
-    image,
-    imageCldPubId,
-  }: SignUpPayload) => {
+  register: async (params: SignUpPayload & { providerName?: string }) => {
+    // Handle social sign-up (uses the same flow as sign-in for OAuth)
+    if (params.providerName) {
+      const role = params.role || UserRole.STUDENT;
+      // Store the role for after OAuth callback
+      localStorage.setItem("pending_role", role);
+
+      // Use better-auth's social sign-in method
+      try {
+        if (params.providerName === "google") {
+          await authClient.signIn.social({
+            provider: "google",
+            callbackURL: window.location.origin + "/",
+          });
+        } else if (params.providerName === "github") {
+          await authClient.signIn.social({
+            provider: "github",
+            callbackURL: window.location.origin + "/",
+          });
+        }
+      } catch (error) {
+        console.error("Social sign-in error:", error);
+        return {
+          success: false,
+          error: {
+            name: "Social login failed",
+            message: "Unable to sign in with social provider. Please try again.",
+          },
+        };
+      }
+
+      return {
+        success: true,
+      };
+    }
+
+    // Handle email sign-up
     try {
       const { data, error } = await authClient.signUp.email({
-        name,
-        email,
-        password,
-        image,
-        role,
-        imageCldPubId,
+        name: params.name,
+        email: params.email,
+        password: params.password,
+        image: params.image,
+        role: params.role || UserRole.STUDENT,
+        imageCldPubId: params.imageCldPubId,
       } as SignUpPayload);
 
       if (error) {
@@ -50,11 +79,47 @@ export const authProvider: AuthProvider = {
       };
     }
   },
-  login: async ({ email, password }) => {
+  login: async (params: { email?: string; password?: string; providerName?: string; role?: string }) => {
+    // Handle social sign-in
+    if (params.providerName) {
+      const role = params.role || UserRole.STUDENT;
+      // Store the role for after OAuth callback
+      localStorage.setItem("pending_role", role);
+
+      // Use better-auth's social sign-in method
+      try {
+        if (params.providerName === "google") {
+          await authClient.signIn.social({
+            provider: "google",
+            callbackURL: window.location.origin + "/",
+          });
+        } else if (params.providerName === "github") {
+          await authClient.signIn.social({
+            provider: "github",
+            callbackURL: window.location.origin + "/",
+          });
+        }
+      } catch (error) {
+        console.error("Social sign-in error:", error);
+        return {
+          success: false,
+          error: {
+            name: "Social login failed",
+            message: "Unable to sign in with social provider. Please try again.",
+          },
+        };
+      }
+
+      return {
+        success: true,
+      };
+    }
+
+    // Handle email sign-in
     try {
       const { data, error } = await authClient.signIn.email({
-        email: email,
-        password: password,
+        email: params.email!,
+        password: params.password!,
       });
 
       if (error) {
@@ -63,7 +128,7 @@ export const authProvider: AuthProvider = {
           success: false,
           error: {
             name: "Login failed",
-            message: error?.message || "Please try again later.",
+            message: error?.message || "Invalid email or password.",
           },
         };
       }
@@ -81,26 +146,20 @@ export const authProvider: AuthProvider = {
         success: false,
         error: {
           name: "Login failed",
-          message: "Please try again later.",
+          message: "Unable to sign in. Please check your connection and try again.",
         },
       };
     }
   },
   logout: async () => {
-    const { error } = await authClient.signOut();
-
-    if (error) {
+    try {
+      await authClient.signOut();
+    } catch (error) {
       console.error("Logout error:", error);
-      return {
-        success: false,
-        error: {
-          name: "Logout failed",
-          message: "Unable to log out. Please try again.",
-        },
-      };
     }
 
     localStorage.removeItem("user");
+    localStorage.removeItem("pending_role");
 
     return {
       success: true,
@@ -125,13 +184,26 @@ export const authProvider: AuthProvider = {
       };
     }
 
+    // Try to get session from server (important for OAuth callback)
+    try {
+      const session = await authClient.getSession();
+      if (session?.data?.user) {
+        localStorage.setItem("user", JSON.stringify(session.data.user));
+        return {
+          authenticated: true,
+        };
+      }
+    } catch (error) {
+      console.error("Session check error:", error);
+    }
+
     return {
       authenticated: false,
       logout: true,
       redirectTo: "/login",
       error: {
         name: "Unauthorized",
-        message: "Check failed",
+        message: "Please sign in to continue.",
       },
     };
   },

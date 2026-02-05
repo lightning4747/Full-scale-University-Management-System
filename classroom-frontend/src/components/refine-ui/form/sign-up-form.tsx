@@ -65,12 +65,14 @@ export const SignUpForm = () => {
   const handleSignUpWithGoogle = () => {
     register({
       providerName: "google",
+      role,
     });
   };
 
   const handleSignUpWithGitHub = () => {
     register({
       providerName: "github",
+      role,
     });
   };
 
@@ -111,7 +113,7 @@ export const SignUpForm = () => {
           <CardDescription
             className={cn("text-muted-foreground", "font-medium")}
           >
-            Welcome to lorem ipsum dolor.
+            Create your account to get started.
           </CardDescription>
         </CardHeader>
 
@@ -144,6 +146,7 @@ export const SignUpForm = () => {
             </div>
 
             <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
+              <Label>I am a</Label>
               <div className={cn("grid", "grid-cols-2", "gap-3")}>
                 {ROLE_OPTIONS.map((option) => (
                   <button

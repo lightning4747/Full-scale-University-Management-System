@@ -21,44 +21,32 @@ const PORT = 8000;
 
 app.set('trust proxy', true);
 
-// CORS – configurable via environment variables
-const getAllowedOrigins = (): string | string[] | ((origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => void) => {
-  const originsEnv = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGIN;
 
-  if (!originsEnv) {
-    // Default fallback for local development
-    return "http://localhost:5173";
-  }
 
-  // Check if it's a comma-separated list
-  if (originsEnv.includes(",")) {
-    const origins = originsEnv.split(",").map((origin) => origin.trim()).filter(Boolean);
-    // Return a function to validate origin against the list
-    return (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-      if (!origin || origins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    };
-  }
-
-  // Single origin string
-  return originsEnv.trim();
-};
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: getAllowedOrigins(), // frontend origin
+  origin: (origin, callback) => {
+    const originsEnv = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGIN || "http://localhost:5173";
+    const allowedList = originsEnv.split(",").map(o => o.trim());
+    
+    // Allow requests with no origin (like mobile apps or curl) 
+    // or if the origin is in the allowed list
+    if (!origin || allowedList.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"], // Added Cookie to headers
 }));
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
+// Auth handler - handles all /api/auth/* routes (login, register, OAuth callbacks, etc.)
+app.all('/api/auth', toNodeHandler(auth));
 
-// JSON middleware
-app.use(express.json());
 
 // Session middleware - extracts user from session for role-based rate limiting
 app.use(sessionMiddleware);

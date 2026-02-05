@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { CircleHelp } from "lucide-react";
+import { CircleHelp, GraduationCap, School, ShieldCheck } from "lucide-react";
 
 import { InputPassword } from "@/components/refine-ui/form/input-password";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,28 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useLink, useLogin, useRefineOptions } from "@refinedev/core";
+import { UserRole } from "@/types";
+
+const SIGN_IN_ROLE_OPTIONS = [
+  {
+    value: UserRole.STUDENT,
+    label: "Student",
+    icon: GraduationCap,
+    color: "blue",
+  },
+  {
+    value: UserRole.TEACHER,
+    label: "Teacher",
+    icon: School,
+    color: "green",
+  },
+];
 
 export const SignInForm = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
 
   const Link = useLink();
 
@@ -38,18 +55,21 @@ export const SignInForm = () => {
     login({
       email,
       password,
+      role,
     });
   };
 
   const handleSignInWithGoogle = () => {
     login({
       providerName: "google",
+      role,
     });
   };
 
   const handleSignInWithGitHub = () => {
     login({
       providerName: "github",
+      role,
     });
   };
 
@@ -90,7 +110,7 @@ export const SignInForm = () => {
           <CardDescription
             className={cn("text-muted-foreground", "font-medium")}
           >
-            Welcome back
+            Welcome back! Sign in to continue.
           </CardDescription>
         </CardHeader>
 
@@ -99,6 +119,39 @@ export const SignInForm = () => {
         <CardContent className={cn("px-0")}>
           <form onSubmit={handleSignIn}>
             <div className={cn("flex", "flex-col", "gap-2")}>
+              <Label>I am a</Label>
+              <div className={cn("grid", "grid-cols-2", "gap-3")}>
+                {SIGN_IN_ROLE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setRole(option.value)}
+                    className={cn(
+                      "flex",
+                      "flex-col",
+                      "items-center",
+                      "justify-center",
+                      "gap-2",
+                      "p-4",
+                      "rounded-lg",
+                      "border-2",
+                      "transition-all",
+                      "duration-200",
+                      role === option.value
+                        ? option.color === "blue"
+                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400"
+                          : "border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400"
+                        : "border-muted-foreground/20 hover:border-muted-foreground/40"
+                    )}
+                  >
+                    <option.icon className={cn("w-6", "h-6")} />
+                    <span className={cn("font-medium")}>{option.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -219,21 +272,41 @@ export const SignInForm = () => {
         <Separator />
 
         <CardFooter>
-          <div className={cn("w-full", "text-center text-sm")}>
-            <span className={cn("text-sm", "text-muted-foreground")}>
-              No account?{" "}
-            </span>
-            <Link
-              to="/register"
-              className={cn(
-                "text-green-600",
-                "dark:text-green-400",
-                "font-semibold",
-                "underline"
-              )}
-            >
-              Sign up
-            </Link>
+          <div className={cn("w-full", "flex", "flex-col", "gap-2", "text-center", "text-sm")}>
+            <div>
+              <span className={cn("text-sm", "text-muted-foreground")}>
+                No account?{" "}
+              </span>
+              <Link
+                to="/register"
+                className={cn(
+                  "text-green-600",
+                  "dark:text-green-400",
+                  "font-semibold",
+                  "underline"
+                )}
+              >
+                Sign up
+              </Link>
+            </div>
+            <div>
+              <Link
+                to="/admin/login"
+                className={cn(
+                  "text-sm",
+                  "text-purple-600",
+                  "dark:text-purple-400",
+                  "font-medium",
+                  "hover:underline",
+                  "inline-flex",
+                  "items-center",
+                  "gap-1"
+                )}
+              >
+                <ShieldCheck className={cn("w-4", "h-4")} />
+                Admin Login
+              </Link>
+            </div>
           </div>
         </CardFooter>
       </Card>
