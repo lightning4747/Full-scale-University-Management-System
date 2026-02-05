@@ -39,8 +39,8 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # GitHub OAuth (provided)
-GITHUB_CLIENT_ID=Ov23liBBk8K6ZQLQ058v
-GITHUB_CLIENT_SECRET=b09ade57e7d745be201317bf6eeace3b8d1b44cc
+GITHUB_CLIENT_ID=<your-github-id>
+GITHUB_CLIENT_SECRET=<your-github-secret>
 
 # Database
 DATABASE_URL=postgresql://user:password@localhost:5432/database
@@ -130,8 +130,8 @@ User → Frontend → Backend (better-auth) → OAuth Provider → Backend → F
 ### GitHub OAuth Setup
 
 Already configured with:
-- Client ID: `Ov23liBBk8K6ZQLQ058v`
-- Client Secret: `b09ade57e7d745be201317bf6eeace3b8d1b44cc`
+- Client ID: `<your-github-id>`
+- Client Secret: `<your-github-secret>`
 
 Just ensure the callback URL in GitHub OAuth settings matches: `http://localhost:8000/api/auth/callback/github`
 

@@ -18,8 +18,8 @@ FRONTEND_URL=http://localhost:5173
 DATABASE_URL=postgresql://user:pass@localhost:5432/db
 
 # GitHub OAuth (PROVIDED)
-GITHUB_CLIENT_ID=Ov23liBBk8K6ZQLQ058v
-GITHUB_CLIENT_SECRET=b09ade57e7d745be201317bf6eeace3b8d1b44cc
+GITHUB_CLIENT_ID=<your-github-id>
+GITHUB_CLIENT_SECRET=<your-github-secret>
 
 # Google OAuth (NEEDED - Get from console.cloud.google.com)
 GOOGLE_CLIENT_ID=your-id

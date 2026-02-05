@@ -54,8 +54,8 @@ This properly separates the base URL and the auth base path, allowing better-aut
 ### GitHub OAuth 2.0
 - **Status:** Ready for configuration
 - **Provided Credentials:**
-  - `GITHUB_CLIENT_ID` - Ov23liBBk8K6ZQLQ058v
-  - `GITHUB_CLIENT_SECRET` - b09ade57e7d745be201317bf6eeace3b8d1b44cc
+  - `GITHUB_CLIENT_ID` - <your-github-id>
+  - `GITHUB_CLIENT_SECRET` - <your-github-secret>
 - **Callback URL:** `http://localhost:8000/api/auth/callback/github`
 
 ## Backend Configuration (auth.ts)
@@ -90,8 +90,8 @@ FRONTEND_URL=http://localhost:5173
 ADMIN_EMAIL=vignesh112847@gmail.com
 GOOGLE_CLIENT_ID=<your-google-id>
 GOOGLE_CLIENT_SECRET=<your-google-secret>
-GITHUB_CLIENT_ID=Ov23liBBk8K6ZQLQ058v
-GITHUB_CLIENT_SECRET=b09ade57e7d745be201317bf6eeace3b8d1b44cc
+GITHUB_CLIENT_ID=<your-github-id>
+GITHUB_CLIENT_SECRET=<your-github-secret>
 DATABASE_URL=<your-database-url>
 ALLOWED_ORIGINS=http://localhost:5173
 ```

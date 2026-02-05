@@ -19,8 +19,8 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # GitHub OAuth 2.0
-GITHUB_CLIENT_ID=Ov23liBBk8K6ZQLQ058v
-GITHUB_CLIENT_SECRET=b09ade57e7d745be201317bf6eeace3b8d1b44cc
+GITHUB_CLIENT_ID=<your-github-id>
+GITHUB_CLIENT_SECRET=<your-github-secret>
 
 # CORS Configuration (comma-separated URLs)
 ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000

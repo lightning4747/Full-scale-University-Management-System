@@ -189,8 +189,8 @@ ADMIN_EMAIL=vignesh112847@gmail.com
 # OAuth Credentials
 GOOGLE_CLIENT_ID=<your-id>
 GOOGLE_CLIENT_SECRET=<your-secret>
-GITHUB_CLIENT_ID=Ov23liBBk8K6ZQLQ058v
-GITHUB_CLIENT_SECRET=b09ade57e7d745be201317bf6eeace3b8d1b44cc
+GITHUB_CLIENT_ID=<your-github-id>
+GITHUB_CLIENT_SECRET=<your-github-secret>
 
 # Database
 DATABASE_URL=postgresql://...
