@@ -20,10 +20,10 @@ import {
   Home,
   Users,
 } from "lucide-react";
-import SubjectsList from "./pages/Subjects/list";
+import SubjectsList from "./pages/subjects/list";
 import { Layout } from "./components/refine-ui/layout/layout";
-import SubjectsCreate from "./pages/Subjects/create";
-import SubjectsShow from "./pages/Subjects/show";
+import SubjectsCreate from "./pages/subjects/create";
+import SubjectsShow from "./pages/subjects/show";
 import Dashboard from "./pages/dashboard";
 
 import { dataProvider } from "./providers/data";
