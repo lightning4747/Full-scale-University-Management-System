@@ -240,8 +240,8 @@ const SubjectsShow = () => {
           {query.isLoading
             ? "Loading subject details..."
             : query.isError
-            ? "Failed to load subject details."
-            : "Subject details not found."}
+              ? "Failed to load subject details."
+              : "Subject details not found."}
         </p>
       </ShowView>
     );
@@ -296,7 +296,7 @@ const SubjectsShow = () => {
           <Badge variant="secondary">{details.totals.classes}</Badge>
         </CardHeader>
         <CardContent>
-          <DataTable table={classesTable} paginationVariant="simple" />
+          <DataTable table={classesTable} />
         </CardContent>
       </Card>
 
@@ -306,7 +306,7 @@ const SubjectsShow = () => {
             <CardTitle>Teachers</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={teachersTable} paginationVariant="simple" />
+            <DataTable table={teachersTable} />
           </CardContent>
         </Card>
 
@@ -315,7 +315,7 @@ const SubjectsShow = () => {
             <CardTitle>Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={studentsTable} paginationVariant="simple" />
+            <DataTable table={studentsTable} />
           </CardContent>
         </Card>
       </div>
@@ -327,9 +327,8 @@ const getInitials = (name = "") => {
   const parts = name.trim().split(" ").filter(Boolean);
   if (parts.length === 0) return "";
   if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "";
-  return `${parts[0][0] ?? ""}${
-    parts[parts.length - 1][0] ?? ""
-  }`.toUpperCase();
+  return `${parts[0][0] ?? ""}${parts[parts.length - 1][0] ?? ""
+    }`.toUpperCase();
 };
 
 export default SubjectsShow;

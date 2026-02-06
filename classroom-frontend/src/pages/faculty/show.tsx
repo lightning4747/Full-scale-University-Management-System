@@ -195,8 +195,8 @@ const FacultyShow = () => {
           {query.isLoading
             ? "Loading faculty details..."
             : query.isError
-            ? "Failed to load faculty details."
-            : "Faculty details not found."}
+              ? "Failed to load faculty details."
+              : "Faculty details not found."}
         </p>
       </ShowView>
     );
@@ -234,7 +234,7 @@ const FacultyShow = () => {
             <p className="text-sm text-muted-foreground">
               Departments tied to {user.name} based on classes and enrollments.
             </p>
-            <DataTable table={departmentsTable} paginationVariant="simple" />
+            <DataTable table={departmentsTable} />
           </CardContent>
         </Card>
 
@@ -246,7 +246,7 @@ const FacultyShow = () => {
             <p className="text-sm text-muted-foreground">
               Subjects associated with {user.name} in this term.
             </p>
-            <DataTable table={subjectsTable} paginationVariant="simple" />
+            <DataTable table={subjectsTable} />
           </CardContent>
         </Card>
       </div>
@@ -258,9 +258,8 @@ const getInitials = (name = "") => {
   const parts = name.trim().split(" ").filter(Boolean);
   if (parts.length === 0) return "";
   if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "";
-  return `${parts[0][0] ?? ""}${
-    parts[parts.length - 1][0] ?? ""
-  }`.toUpperCase();
+  return `${parts[0][0] ?? ""}${parts[parts.length - 1][0] ?? ""
+    }`.toUpperCase();
 };
 
 export default FacultyShow;
