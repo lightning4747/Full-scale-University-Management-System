@@ -45,7 +45,8 @@ app.use(cors({
 }));
 
 // Auth handler - handles all /api/auth/* routes (login, register, OAuth callbacks, etc.)
-app.all('/api/auth', toNodeHandler(auth));
+// Remove the asterisk (*) and the colon (:)
+app.use('/api/auth', toNodeHandler(auth));
 
 
 // Session middleware - extracts user from session for role-based rate limiting

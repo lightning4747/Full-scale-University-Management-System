@@ -10,23 +10,20 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "vignesh112847@gmail.com";
 // Frontend URL for redirects after OAuth
 const FRONTEND_URL = process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173";
 
-// Build social providers config only if credentials are available
-const socialProviders: Record<string, { clientId: string; clientSecret: string; redirectURI?: string }> = {};
+// Build social providers config
+const socialConfig: any = {};
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    socialProviders.google = {
+    socialConfig.google = {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        // The redirect URI that Google will call after authentication
-        redirectURI: `${process.env.BETTER_AUTH_URL || "http://localhost:8000"}/api/auth/callback/google`,
     };
 }
 
 if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-    socialProviders.github = {
+    socialConfig.github = {
         clientId: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        redirectURI: `${process.env.BETTER_AUTH_URL || "http://localhost:8000"}/api/auth/callback/github`,
     };
 }
 
@@ -52,7 +49,7 @@ export const auth = betterAuth({
     },
 
     // Social providers (Google, GitHub)
-    ...(Object.keys(socialProviders).length > 0 && { socialProviders }),
+    ...(Object.keys(socialConfig).length > 0 && { socialProviders: socialConfig }),
 
     // Additional user fields
     user: {
