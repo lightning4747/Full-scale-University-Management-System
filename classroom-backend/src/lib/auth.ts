@@ -34,7 +34,7 @@ export const auth = betterAuth({
     basePath: "/api/auth",
 
     // The base URL of the backend server
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:8000",
+    baseURL: process.env.BETTER_AUTH_URL?.replace(/\/$/, "") || "http://localhost:8000",
 
     // Trusted origins that can make requests (frontend)
     trustedOrigins: [FRONTEND_URL],
@@ -73,6 +73,13 @@ export const auth = betterAuth({
         cookieCache: {
             enabled: true,
             maxAge: 60 * 5 // 5 minutes
+        }
+    },
+
+    advanced: {
+        defaultCookieAttributes: {
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production"
         }
     },
 

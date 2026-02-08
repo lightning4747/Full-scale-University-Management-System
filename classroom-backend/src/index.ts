@@ -28,14 +28,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
   origin: (origin, callback) => {
-    const originsEnv = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGIN || "http://localhost:5173";
+    const originsEnv = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGIN || process.env.FRONTEND_URL || "http://localhost:5173";
     const allowedList = originsEnv.split(",").map(o => o.trim());
-    
+
     // Allow requests with no origin (like mobile apps or curl) 
     // or if the origin is in the allowed list
     if (!origin || allowedList.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.error(`CORS Blocked: Origin '${origin}' not in allowed list:`, allowedList);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -46,7 +47,11 @@ app.use(cors({
 
 // Auth handler - handles all /api/auth/* routes (login, register, OAuth callbacks, etc.)
 // Remove the asterisk (*) and the colon (:)
-app.use('/api/auth', toNodeHandler(auth));
+// Auth handler - handles all /api/auth/* routes (login, register, OAuth callbacks, etc.)
+app.use('/api/auth', (req, res, next) => {
+  console.log(`Auth Request: ${req.method} ${req.path}`);
+  next();
+}, toNodeHandler(auth));
 
 
 // Session middleware - extracts user from session for role-based rate limiting

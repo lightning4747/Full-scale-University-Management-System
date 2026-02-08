@@ -30,7 +30,7 @@ type SubjectClass = {
   status?: string | null;
   capacity?: number | null;
   teacher?: {
-    id: string;
+    id: string
     name: string;
     email?: string | null;
     image?: string | null;
