@@ -1,10 +1,11 @@
-import { UserAvatar } from "@/components/refine-ui/layout/user-avatar";
+import { UserAvatar } from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/refine-ui/theme/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,9 @@ import {
   useRefineOptions,
 } from "@refinedev/core";
 import { LogOutIcon } from "lucide-react";
+import { Link } from "@refinedev/core";
+import { UserIcon } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export const Header = () => {
   const { isMobile } = useSidebar();
@@ -118,8 +122,8 @@ function MobileHeader() {
 }
 
 const UserDropdown = () => {
+  const { data: session } = authClient.useSession();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
-
   const authProvider = useActiveAuthProvider();
 
   if (!authProvider?.getIdentity) {
@@ -128,17 +132,30 @@ const UserDropdown = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <UserAvatar />
+      <DropdownMenuTrigger className="focus:outline-none">
+        <UserAvatar src={session?.user?.image} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-48">
+        {/* --- ADDED PROFILE LINK --- */}
+        <DropdownMenuItem asChild>
+          <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
+            <UserIcon className="h-4 w-4 text-muted-foreground" />
+            <span>Profile Settings</span>
+          </Link>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator className="my-1" />
+
+        {/* --- EXISTING LOGOUT --- */}
         <DropdownMenuItem
+          className="flex items-center gap-2 cursor-pointer"
+          disabled={isLoggingOut}
           onClick={() => {
             logout();
           }}
         >
           <LogOutIcon
-            className={cn("text-destructive", "hover:text-destructive")}
+            className={cn("h-4 w-4 text-destructive", "hover:text-destructive")}
           />
           <span className={cn("text-destructive", "hover:text-destructive")}>
             {isLoggingOut ? "Logging out..." : "Logout"}
