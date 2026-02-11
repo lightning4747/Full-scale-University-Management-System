@@ -10,6 +10,7 @@ import AgentAPI from "apminsight";
 import subjectsRouter from "./routes/subject.js";
 import usersRouter from "./routes/user.js";
 import classesRouter from "./routes/classes.js";
+import departmentsRouter from "./routes/departments.js";
 AgentAPI.config()
 
 if (!globalThis.crypto) {
@@ -70,6 +71,9 @@ app.use("/api/users", usersRouter);
 
 // Classes routes
 app.use("/api/classes", classesRouter);
+
+// Departments routes
+app.use("/api/departments", departmentsRouter);
 
 // Root
 app.get("/", (_req, res) => {

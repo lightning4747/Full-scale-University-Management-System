@@ -88,6 +88,72 @@ router.post("/", async (req, res) => {
   }
 });
 
+// Update department
+router.put("/:id", async (req, res) => {
+  try {
+    const departmentId = Number(req.params.id);
+    const { code, name, description } = req.body;
+
+    if (!Number.isFinite(departmentId)) {
+      return res.status(400).json({ error: "Invalid department id" });
+    }
+
+    const [updatedDepartment] = await db
+      .update(departments)
+      .set({ code, name, description })
+      .where(eq(departments.id, departmentId))
+      .returning();
+
+    if (!updatedDepartment) {
+      return res.status(404).json({ error: "Department not found" });
+    }
+
+    res.status(200).json({ data: updatedDepartment });
+  } catch (error) {
+    console.error("PUT /departments/:id error:", error);
+    res.status(500).json({ error: "Failed to update department" });
+  }
+});
+
+// Delete department
+router.delete("/:id", async (req, res) => {
+  try {
+    const departmentId = Number(req.params.id);
+
+    if (!Number.isFinite(departmentId)) {
+      return res.status(400).json({ error: "Invalid department id" });
+    }
+
+    // Check if department has related records (subjects)
+    const [stats] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(subjects)
+      .where(eq(subjects.departmentId, departmentId));
+
+    const subjectCount = stats?.count ?? 0;
+
+    if (subjectCount > 0) {
+      return res.status(400).json({
+        error: "Cannot delete department with associated subjects. Please delete or reassign subjects first."
+      });
+    }
+
+    const [deletedDepartment] = await db
+      .delete(departments)
+      .where(eq(departments.id, departmentId))
+      .returning();
+
+    if (!deletedDepartment) {
+      return res.status(404).json({ error: "Department not found" });
+    }
+
+    res.status(200).json({ data: deletedDepartment });
+  } catch (error) {
+    console.error("DELETE /departments/:id error:", error);
+    res.status(500).json({ error: "Failed to delete department" });
+  }
+});
+
 // Get department details with counts
 router.get("/:id", async (req, res) => {
   try {
@@ -293,52 +359,52 @@ router.get("/:id/users", async (req, res) => {
     const countResult =
       role === "teacher"
         ? await db
-            .select({ count: sql<number>`count(distinct ${user.id})` })
-            .from(user)
-            .leftJoin(classes, eq(user.id, classes.teacherId))
-            .leftJoin(subjects, eq(classes.subjectId, subjects.id))
-            .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
-            )
+          .select({ count: sql<number>`count(distinct ${user.id})` })
+          .from(user)
+          .leftJoin(classes, eq(user.id, classes.teacherId))
+          .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+          .where(
+            and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+          )
         : await db
-            .select({ count: sql<number>`count(distinct ${user.id})` })
-            .from(user)
-            .leftJoin(enrollments, eq(user.id, enrollments.studentId))
-            .leftJoin(classes, eq(enrollments.classId, classes.id))
-            .leftJoin(subjects, eq(classes.subjectId, subjects.id))
-            .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
-            );
+          .select({ count: sql<number>`count(distinct ${user.id})` })
+          .from(user)
+          .leftJoin(enrollments, eq(user.id, enrollments.studentId))
+          .leftJoin(classes, eq(enrollments.classId, classes.id))
+          .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+          .where(
+            and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+          );
 
     const totalCount = countResult[0]?.count ?? 0;
 
     const usersList =
       role === "teacher"
         ? await db
-            .select(baseSelect)
-            .from(user)
-            .leftJoin(classes, eq(user.id, classes.teacherId))
-            .leftJoin(subjects, eq(classes.subjectId, subjects.id))
-            .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
-            )
-            .groupBy(...groupByFields)
-            .orderBy(desc(user.createdAt))
-            .limit(limitPerPage)
-            .offset(offset)
+          .select(baseSelect)
+          .from(user)
+          .leftJoin(classes, eq(user.id, classes.teacherId))
+          .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+          .where(
+            and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+          )
+          .groupBy(...groupByFields)
+          .orderBy(desc(user.createdAt))
+          .limit(limitPerPage)
+          .offset(offset)
         : await db
-            .select(baseSelect)
-            .from(user)
-            .leftJoin(enrollments, eq(user.id, enrollments.studentId))
-            .leftJoin(classes, eq(enrollments.classId, classes.id))
-            .leftJoin(subjects, eq(classes.subjectId, subjects.id))
-            .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
-            )
-            .groupBy(...groupByFields)
-            .orderBy(desc(user.createdAt))
-            .limit(limitPerPage)
-            .offset(offset);
+          .select(baseSelect)
+          .from(user)
+          .leftJoin(enrollments, eq(user.id, enrollments.studentId))
+          .leftJoin(classes, eq(enrollments.classId, classes.id))
+          .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+          .where(
+            and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+          )
+          .groupBy(...groupByFields)
+          .orderBy(desc(user.createdAt))
+          .limit(limitPerPage)
+          .offset(offset);
 
     res.status(200).json({
       data: usersList,
