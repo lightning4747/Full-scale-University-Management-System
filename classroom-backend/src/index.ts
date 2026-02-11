@@ -45,20 +45,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization", "Cookie"], // Added Cookie to headers
 }));
 
-app.options('*', cors({
-  origin: (origin, callback) => {
-    const originsEnv = process.env.ALLOWED_ORIGINS || process.env.CORS_ORIGIN || process.env.FRONTEND_URL || "http://localhost:5173";
-    const allowedList = originsEnv.split(",").map(o => o.trim().replace(/\/$/, ""));
-    if (!origin || allowedList.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
-}));
+
 
 // Auth handler - handles all /api/auth/* routes (login, register, OAuth callbacks, etc.)
 // Remove the asterisk (*) and the colon (:)
