@@ -29,10 +29,22 @@ import {
 } from "@refinedev/core";
 import { ChevronRight, ListIcon } from "lucide-react";
 import React from "react";
+import { authClient } from "@/lib/auth-client";
 
 export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
+  const { data: session } = authClient.useSession();
+  const isAdmin = (session?.user as any)?.role === "admin";
+
+  /*
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (item.name === "departments" && !isAdmin) return false;
+    if (item.name === "users" && !isAdmin) return false;
+    return true;
+  });
+  */
+  const filteredMenuItems = menuItems;
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
@@ -55,7 +67,7 @@ export function Sidebar() {
           }
         )}
       >
-        {menuItems.map((item: TreeMenuItem) => (
+        {filteredMenuItems.map((item: TreeMenuItem) => (
           <SidebarItem
             key={item.key || item.name}
             item={item}

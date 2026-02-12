@@ -18,7 +18,7 @@ export const authClient = createAuthClient({
   user: {
     additionalFields: {
       role: {
-        type: USER_ROLES,
+        type: "string",
         required: true,
         defaultValue: "student",
         input: true,

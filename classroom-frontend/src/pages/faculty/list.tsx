@@ -62,7 +62,7 @@ const FacultyList = () => {
         header: () => <p className="column-title">Details</p>,
         cell: ({ row }) => (
           <ShowButton
-            resource="users"
+            resource="teachers"
             recordItemId={row.original.id}
             variant="outline"
             size="sm"
@@ -77,29 +77,24 @@ const FacultyList = () => {
 
   const searchFilters = searchQuery
     ? [
-        {
-          field: "search",
-          operator: "contains" as const,
-          value: searchQuery,
-        },
-      ]
+      {
+        field: "search",
+        operator: "contains" as const,
+        value: searchQuery,
+      },
+    ]
     : [];
 
   const facultyTable = useTable<User>({
     columns: facultyColumns,
     refineCoreProps: {
-      resource: "users",
+      resource: "teachers",
       pagination: {
         pageSize: 10,
         mode: "server",
       },
       filters: {
         permanent: [
-          {
-            field: "role",
-            operator: "eq" as const,
-            value: "teacher",
-          },
           ...searchFilters,
         ],
       },

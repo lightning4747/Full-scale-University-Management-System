@@ -1,7 +1,7 @@
 import express from "express";
-import {and, desc, eq, getTableColumns, ilike, or, sql} from "drizzle-orm";
+import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
-import {user} from "../db/schema/index.js";
+import { user } from "../db/schema/index.js";
 import { db } from "../db/db.js";
 
 const router = express.Router();
@@ -37,7 +37,7 @@ router.get("/", async (req, res) => {
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
         const countResult = await db
-            .select({ count: sql<number>`count(*)`})
+            .select({ count: sql<number>`count(*)` })
             .from(user)
             .where(whereClause);
 

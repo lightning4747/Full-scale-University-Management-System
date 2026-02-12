@@ -39,7 +39,7 @@ const FacultyShow = () => {
   const userId = id ?? "";
 
   const { query } = useShow<User>({
-    resource: "users",
+    resource: "teachers",
   });
 
   const user = query.data?.data;
@@ -190,7 +190,7 @@ const FacultyShow = () => {
   if (query.isLoading || query.isError || !user) {
     return (
       <ShowView className="class-view">
-        <ShowViewHeader resource="users" title="Faculty Details" />
+        <ShowViewHeader resource="teachers" title="Faculty Details" />
         <p className="text-sm text-muted-foreground">
           {query.isLoading
             ? "Loading faculty details..."
@@ -204,7 +204,7 @@ const FacultyShow = () => {
 
   return (
     <ShowView className="class-view space-y-6">
-      <ShowViewHeader resource="users" title={user.name} />
+      <ShowViewHeader resource="teachers" title={user.name} />
 
       <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between">
