@@ -42,6 +42,7 @@ import EnrollmentsCreate from "./pages/enrollments/create";
 import EnrollmentsJoin from "./pages/enrollments/join";
 import EnrollmentConfirm from "./pages/enrollments/confirm";
 import { AdminLogin } from "./pages/admin/login";
+import Profile from "./pages/profile";
 
 function App() {
   return (
@@ -89,9 +90,9 @@ function App() {
                   },
                 },
                 {
-                  name: "users",
-                  list: "/faculty",
-                  show: "/faculty/show/:id",
+                  name: "teachers",
+                  list: "/teachers",
+                  show: "/teachers/show/:id",
                   meta: {
                     label: "Faculty",
                     icon: <Users />,
@@ -141,6 +142,7 @@ function App() {
                   }
                 >
                   <Route path="/" element={<Dashboard />} />
+                  <Route path="/profile" element={<Profile />} />
 
                   <Route path="subjects">
                     <Route index element={<SubjectsList />} />
@@ -154,7 +156,7 @@ function App() {
                     <Route path="show/:id" element={<DepartmentShow />} />
                   </Route>
 
-                  <Route path="faculty">
+                  <Route path="teachers">
                     <Route index element={<FacultyList />} />
                     <Route path="show/:id" element={<FacultyShow />} />
                   </Route>
