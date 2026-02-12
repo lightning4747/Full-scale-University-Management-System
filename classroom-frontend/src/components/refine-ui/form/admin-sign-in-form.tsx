@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useLink, useLogin, useRefineOptions } from "@refinedev/core";
+import { useLink, useGo, useNotification, useRefineOptions } from "@refinedev/core";
+import { authClient } from "@/lib/auth-client";
 import { UserRole } from "@/types";
 
 export const AdminSignInForm = () => {
@@ -29,16 +30,39 @@ export const AdminSignInForm = () => {
 
     const { title } = useRefineOptions();
 
-    const { mutate: login } = useLogin();
+    const go = useGo();
+    const { open } = useNotification();
 
     const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        login({
+        const { data, error } = await authClient.signIn.email({
             email,
             password,
-            role: UserRole.ADMIN,
         });
+
+        if (error) {
+            open?.({
+                type: "error",
+                message: "Login Failed",
+                description: error.message || "Invalid credentials",
+            });
+            return;
+        }
+
+        if ((data?.user as any)?.role !== "admin") {
+            await authClient.signOut();
+            open?.({
+                type: "error",
+                message: "Access Denied: Use the Student/Faculty portal.",
+                description: "You do not have administrative privileges.",
+            });
+            return;
+        }
+
+        // Success - store user and redirect
+        localStorage.setItem("user", JSON.stringify(data.user));
+        go({ to: "/" });
     };
 
     return (
