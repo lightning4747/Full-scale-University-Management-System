@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import securityMiddleWare from "./middleware/security.js";
 import sessionMiddleware from "./middleware/session.js";
+import { isAdmin } from "./middleware/roleCheck.js";
 import { toNodeHandler } from "better-auth/node"
 import { auth } from "./lib/auth.js";
 import { webcrypto } from 'node:crypto';
@@ -67,12 +68,14 @@ app.use(securityMiddleWare);
 app.use("/api/subjects", subjectsRouter);
 
 // Users routes
+// app.use("/api/users", isAdmin, usersRouter);
 app.use("/api/users", usersRouter);
 
 // Classes routes
 app.use("/api/classes", classesRouter);
 
 // Departments routes
+// app.use("/api/departments", isAdmin, departmentsRouter);
 app.use("/api/departments", departmentsRouter);
 
 // Root
