@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { InputPassword } from "@/components/refine-ui/form/input-password";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,13 @@ import {
 } from "@refinedev/core";
 import { ROLE_OPTIONS, USER_ROLES } from "@/constants";
 import { UserRole } from "@/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const SignUpForm = () => {
   const [name, setName] = useState("");
@@ -31,6 +38,23 @@ export const SignUpForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [departmentId, setDepartmentId] = useState<string>("");
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/departments");
+        const json = await response.json();
+        // Handle various response formats
+        const data = Array.isArray(json) ? json : json.data || [];
+        setDepartments(data);
+      } catch (error) {
+        console.error("Failed to fetch departments:", error);
+      }
+    };
+    fetchDepartments();
+  }, []);
 
   const { open } = useNotification();
 
@@ -59,6 +83,7 @@ export const SignUpForm = () => {
       email,
       password,
       role,
+      departmentId,
     });
   };
 
@@ -138,7 +163,7 @@ export const SignUpForm = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder=""
+                placeholder="Enter your official mail Id"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -146,7 +171,6 @@ export const SignUpForm = () => {
             </div>
 
             <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
-              <Label>I am a</Label>
               <div className={cn("grid", "grid-cols-2", "gap-3")}>
                 {ROLE_OPTIONS.map((option) => (
                   <button
@@ -174,6 +198,22 @@ export const SignUpForm = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className={cn("flex", "flex-col", "gap-2", "mt-6")}>
+              <Label>Department</Label>
+              <Select onValueChange={setDepartmentId} value={departmentId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a department" />
+                </SelectTrigger>
+                <SelectContent>
+                  {departments && departments.map((dept: any) => (
+                    <SelectItem key={dept.id} value={String(dept.id)}>
+                      {dept.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div

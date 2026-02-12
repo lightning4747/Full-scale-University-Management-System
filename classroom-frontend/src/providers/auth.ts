@@ -48,7 +48,8 @@ export const authProvider: AuthProvider = {
         image: params.image,
         role: params.role || UserRole.STUDENT,
         imageCldPubId: params.imageCldPubId,
-      } as SignUpPayload);
+        department: params.departmentId,
+      } as any);
 
       if (error) {
         return {

@@ -119,7 +119,6 @@ export const SignInForm = () => {
         <CardContent className={cn("px-0")}>
           <form onSubmit={handleSignIn}>
             <div className={cn("flex", "flex-col", "gap-2")}>
-              <Label>I am a</Label>
               <div className={cn("grid", "grid-cols-2", "gap-3")}>
                 {SIGN_IN_ROLE_OPTIONS.map((option) => (
                   <button
@@ -219,7 +218,6 @@ export const SignInForm = () => {
             </div>
 
             <div className={cn("flex", "flex-col", "gap-4", "mt-6")}>
-              <p className={cn("text-sm", "font-medium")}>Sign in using</p>
               <div className={cn("grid grid-cols-2", "gap-6")}>
                 <Button
                   variant="outline"
