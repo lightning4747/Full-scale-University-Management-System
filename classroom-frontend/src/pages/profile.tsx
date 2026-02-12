@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogOut, Mail, Calendar, Shield } from "lucide-react";
+import { Loader2, LogOut, Mail, Calendar, Shield, Building2 } from "lucide-react";
 
 type UserSession = {
     id: string;
@@ -31,7 +31,7 @@ const Profile = () => {
             go({ to: "/login" });
         }
         if (session?.user) {
-            console.log("Session User:", session.user);
+            console.log("Current User Data:", session.user);
         }
     }, [session, isPending, go]);
 
@@ -117,6 +117,14 @@ const Profile = () => {
                                 <span>Member Since</span>
                             </div>
                             <p className="font-medium">{formattedDate}</p>
+                        </div>
+
+                        <div className="space-y-1 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Building2 className="h-4 w-4" />
+                                <span>Department</span>
+                            </div>
+                            <p className="font-medium">{(user as any).department?.name || "No Department Assigned"}</p>
                         </div>
 
                         <div className="space-y-1 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors sm:col-span-2">
