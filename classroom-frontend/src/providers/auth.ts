@@ -9,6 +9,8 @@ export const authProvider: AuthProvider = {
       const role = params.role || UserRole.STUDENT;
       // Store the role for after OAuth callback
       localStorage.setItem("pending_role", role);
+      // Fallback: set cookie for backend or strict redirects
+      document.cookie = `oauth_signup_role=${role}; path=/; max-age=300`;
 
       // Use better-auth's social sign-in method
       try {
@@ -86,6 +88,8 @@ export const authProvider: AuthProvider = {
       const role = params.role || UserRole.STUDENT;
       // Store the role for after OAuth callback
       localStorage.setItem("pending_role", role);
+      // Fallback: set cookie for backend or strict redirects
+      document.cookie = `oauth_signup_role=${role}; path=/; max-age=300`;
 
       // Use better-auth's social sign-in method
       try {

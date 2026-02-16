@@ -75,6 +75,7 @@ export const SignInForm = () => {
   };
 
   const handleSignInWithGoogle = () => {
+    localStorage.setItem("oauth_signup_role", role);
     login({
       providerName: "google",
       role,
@@ -82,6 +83,7 @@ export const SignInForm = () => {
   };
 
   const handleSignInWithGitHub = () => {
+    localStorage.setItem("oauth_signup_role", role);
     login({
       providerName: "github",
       role,

@@ -45,6 +45,8 @@ export const AuthCallback = () => {
                             const updatedSession = await authClient.getSession();
                             if (updatedSession.data?.user) {
                                 localStorage.setItem("user", JSON.stringify(updatedSession.data.user));
+                                // Reload to ensure all components see the new role
+                                window.location.reload();
                             }
                         } else {
                             console.error("Failed to update role:", await response.text());
