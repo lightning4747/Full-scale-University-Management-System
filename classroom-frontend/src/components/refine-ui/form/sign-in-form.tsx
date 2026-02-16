@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { CircleHelp, GraduationCap, School, ShieldCheck } from "lucide-react";
 
@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useLink, useLogin, useRefineOptions } from "@refinedev/core";
+import { useLink, useLogin, useRefineOptions, useNotification } from "@refinedev/core";
 import { UserRole } from "@/types";
 
 const SIGN_IN_ROLE_OPTIONS = [
@@ -42,6 +42,21 @@ export const SignInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
+
+  const { open } = useNotification();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("error") === "role_mismatch") {
+      open?.({
+        type: "error",
+        message: "Role mismatch",
+        description: "Access Denied: Please use the correct portal for your role.",
+      });
+      // Clear the query param
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [open]);
 
   const Link = useLink();
 

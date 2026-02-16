@@ -5,7 +5,7 @@ import { db } from "../db/db.js";
 import * as schema from "../db/schema/auth.js"
 
 // The only email allowed to have admin role
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "vignesh112847@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ;
 
 // Frontend URL for redirects after OAuth
 const FRONTEND_URL = process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173";

@@ -88,6 +88,7 @@ export const SignUpForm = () => {
   };
 
   const handleSignUpWithGoogle = () => {
+    localStorage.setItem("oauth_signup_role", role);
     register({
       providerName: "google",
       role,
@@ -95,6 +96,7 @@ export const SignUpForm = () => {
   };
 
   const handleSignUpWithGitHub = () => {
+    localStorage.setItem("oauth_signup_role", role);
     register({
       providerName: "github",
       role,
