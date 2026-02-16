@@ -43,6 +43,8 @@ import EnrollmentsJoin from "./pages/enrollments/join";
 import EnrollmentConfirm from "./pages/enrollments/confirm";
 import { AdminLogin } from "./pages/admin/login";
 import Profile from "./pages/profile";
+import { AuthCallback } from "./components/auth-callback";
+import TeacherDashboard from "./pages/teachers/dashboard";
 
 function App() {
   return (
@@ -68,6 +70,15 @@ function App() {
                     label: "Home",
                     icon: <Home />,
                   },
+                },
+                {
+                  name: "teacher-dashboard",
+                  list: "/teacher-dashboard",
+                  meta: {
+                    label: "Teacher Portal",
+                    icon: <GraduationCap />,
+                    role: "teacher"
+                  }
                 },
                 {
                   name: "subjects",
@@ -142,6 +153,7 @@ function App() {
                   }
                 >
                   <Route path="/" element={<Dashboard />} />
+                  <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
                   <Route path="/profile" element={<Profile />} />
 
                   <Route path="subjects">
@@ -179,6 +191,7 @@ function App() {
               <RefineKbar />
               <UnsavedChangesNotifier />
               <DocumentTitleHandler />
+              <AuthCallback />
             </Refine>
           </DevtoolsProvider>
         </ThemeProvider>

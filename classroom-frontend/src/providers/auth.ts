@@ -135,7 +135,21 @@ export const authProvider: AuthProvider = {
       }
 
       // Store user data
-      localStorage.setItem("user", JSON.stringify(data.user));
+      const user = data.user;
+
+      // Role check: if a role was selected in the UI, verify it matches the user's actual role
+      if (params.role && (user as any).role !== params.role) {
+        await authClient.signOut();
+        return {
+          success: false,
+          error: {
+            name: "Role mismatch",
+            message: `Access Denied: Use the ${params.role === UserRole.STUDENT ? "Student" : "Faculty"} portal.`,
+          },
+        };
+      }
+
+      localStorage.setItem("user", JSON.stringify(user));
 
       return {
         success: true,

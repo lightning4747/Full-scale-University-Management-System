@@ -11,6 +11,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { authClient } from "@/lib/auth-client";
+import { Navigate } from "react-router";
 import {
   BookOpen,
   Building2,
@@ -40,6 +42,13 @@ type ClassListItem = {
 const roleColors = ["#f97316", "#0ea5e9", "#22c55e", "#a855f7"];
 
 const Dashboard = () => {
+  const { data: session , isPending} = authClient.useSession();
+  const userRole = (session?.user as any)?.role;
+  
+  if (userRole === "teacher") {
+    return <Navigate to="/teacher-dashboard" replace />;
+  }
+  
   const Link = useLink();
   const { query: usersQuery } = useList<User>({
     resource: "users",
@@ -50,37 +59,41 @@ const Dashboard = () => {
     resource: "subjects",
     pagination: { mode: "off" },
   });
-
+  
   const { query: departmentsQuery } = useList<Department>({
     resource: "departments",
     pagination: { mode: "off" },
   });
-
+  
   const { query: classesQuery } = useList<ClassListItem>({
     resource: "classes",
     pagination: { mode: "off" },
   });
+  
+  if (!isPending && userRole === "teacher") {
+    return <Navigate to="/teacher-dashboard" replace />;
+  }
 
   const users = usersQuery.data?.data ?? [];
   const subjects = subjectsQuery.data?.data ?? [];
   const departments = departmentsQuery.data?.data ?? [];
   const classes = classesQuery.data?.data ?? [];
-
+  
   const usersByRole = useMemo(() => {
     const counts = users.reduce<Record<string, number>>((acc, user) => {
       const role = user.role ?? "unknown";
       acc[role] = (acc[role] || 0) + 1;
       return acc;
     }, {});
-
+    
     return Object.entries(counts).map(([role, total]) => ({ role, total }));
   }, [users]);
-
+  
   const subjectsByDepartment = useMemo(() => {
     const counts = subjects.reduce<Record<string, number>>((acc, subject) => {
       const departmentName =
-        (subject as { department?: { name?: string } }).department?.name ??
-        "Unassigned";
+      (subject as { department?: { name?: string } }).department?.name ??
+      "Unassigned";
       acc[departmentName] = (acc[departmentName] || 0) + 1;
       return acc;
     }, {});
