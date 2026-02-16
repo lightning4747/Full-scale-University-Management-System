@@ -35,16 +35,22 @@ export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
   const { data: session } = authClient.useSession();
-  const isAdmin = (session?.user as any)?.role === "admin";
+  const userRole = (session?.user as any)?.role;
+  const isAdmin = userRole === "admin";
+  const isTeacher = userRole === "teacher";
 
-  /*
   const filteredMenuItems = menuItems.filter((item) => {
+    // Check custom role meta
+    const requiredRole = item.meta?.role;
+    if (requiredRole === "teacher" && !isTeacher && !isAdmin) return false;
+    if (requiredRole === "admin" && !isAdmin) return false;
+
+    // Direct resource checks
     if (item.name === "departments" && !isAdmin) return false;
-    if (item.name === "users" && !isAdmin) return false;
+    if (item.name === "teachers" && !isAdmin) return false;
+
     return true;
   });
-  */
-  const filteredMenuItems = menuItems;
 
   return (
     <ShadcnSidebar collapsible="icon" className={cn("border-none")}>
