@@ -5,7 +5,7 @@ import { db } from "../db/db.js";
 import * as schema from "../db/schema/auth.js"
 
 // The only email allowed to have admin role
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
 
 // Frontend URL for redirects after OAuth
 const FRONTEND_URL = process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:5173";
@@ -17,6 +17,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     socialConfig.google = {
         clientId: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        authorization: {
+            params: {
+                prompt: "select_account",
+            },
+        },
     };
 }
 
@@ -24,6 +29,11 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
     socialConfig.github = {
         clientId: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        authorization: {
+            params: {
+                prompt: "select_account"
+            }
+        }
     };
 }
 
@@ -51,7 +61,7 @@ export const auth = betterAuth({
     // Social providers (Google, GitHub)
     ...(Object.keys(socialConfig).length > 0 && { socialProviders: socialConfig }),
 
-    // Additional user fields
+    // Additional user fields — these are persisted in the DB and available in sessions
     user: {
         additionalFields: {
             role: {
@@ -62,6 +72,11 @@ export const auth = betterAuth({
             },
             imageCldPubId: {
                 type: "string",
+                required: false,
+                input: true
+            },
+            departmentId: {
+                type: "number",
                 required: false,
                 input: true
             }
@@ -81,6 +96,42 @@ export const auth = betterAuth({
             sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             secure: process.env.NODE_ENV === "production"
         }
+    },
+
+    // Database hooks
+
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user, ctx) => {
+                    let roleToAssign = "student"; // Default
+
+                    if (ctx?.request) {
+                        const url = new URL(ctx.request.url);
+
+                        // 1. Check direct query params
+                        const directRole = url.searchParams.get("role");
+
+                        // 2. Check the Referer (Better Auth often redirects internally)
+                        const referer = ctx.request.headers.get("referer");
+                        const refererRole = referer ? new URL(referer).searchParams.get("role") : null;
+
+                        const finalRole = directRole || refererRole;
+
+                        if (finalRole === "student" || finalRole === "teacher") {
+                            roleToAssign = finalRole;
+                        }
+                    }
+
+                    return {
+                        data: {
+                            ...user,
+                            role: roleToAssign,
+                        },
+                    };
+                },
+            },
+        },
     },
 
     // Hooks for custom logic

@@ -8,6 +8,7 @@ declare global {
                 role: "admin" | "teacher" | "student";
                 image?: string;
                 imageCldPubId?: string;
+                departmentId?: number | null;
             }
         }
     }

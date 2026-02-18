@@ -4,7 +4,7 @@ import { fromNodeHeaders } from "better-auth/node";
 
 /**
  * Middleware to extract user session from better-auth and attach to req.user
- * This enables role-based rate limiting in the security middleware
+ * This enables role-based rate limiting and department-based isolation
  */
 const sessionMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
     try {
@@ -15,6 +15,7 @@ const sessionMiddleware = async (req: Request, _res: Response, next: NextFunctio
         if (session?.user) {
             const userRole = (session.user as { role?: string }).role;
             const imageCldPubId = (session.user as { imageCldPubId?: string }).imageCldPubId;
+            const departmentId = (session.user as { departmentId?: number | null }).departmentId;
 
             req.user = {
                 id: session.user.id,
@@ -22,7 +23,8 @@ const sessionMiddleware = async (req: Request, _res: Response, next: NextFunctio
                 name: session.user.name,
                 role: (userRole as "admin" | "teacher" | "student") || "student",
                 ...(session.user.image && { image: session.user.image }),
-                ...(imageCldPubId && { imageCldPubId })
+                ...(imageCldPubId && { imageCldPubId }),
+                departmentId: departmentId ?? null,
             };
         }
     } catch (error) {

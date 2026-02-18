@@ -23,8 +23,8 @@ export const authClient = createAuthClient({
         defaultValue: "student",
         input: true,
       },
-      department: {
-        type: "string",
+      departmentId: {
+        type: "number",
         required: false,
         input: true,
       },
