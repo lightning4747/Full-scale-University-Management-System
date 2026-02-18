@@ -17,12 +17,12 @@ export const authProvider: AuthProvider = {
         if (params.providerName === "google") {
           await authClient.signIn.social({
             provider: "google" as const,
-            callbackURL: window.location.origin + "/",
+            callbackURL: `${window.location.origin}/?role=${role}`,
           });
         } else if (params.providerName === "github") {
           await authClient.signIn.social({
             provider: "github" as const,
-            callbackURL: window.location.origin + "/",
+            callbackURL: `${window.location.origin}/?role=${role}`,
           });
         }
       } catch (error) {
@@ -50,7 +50,7 @@ export const authProvider: AuthProvider = {
         image: params.image,
         role: params.role || UserRole.STUDENT,
         imageCldPubId: params.imageCldPubId,
-        department: params.departmentId,
+        departmentId: params.departmentId,
       } as any);
 
       if (error) {
@@ -96,12 +96,12 @@ export const authProvider: AuthProvider = {
         if (params.providerName === "google") {
           await authClient.signIn.social({
             provider: "google" as const,
-            callbackURL: window.location.origin + "/",
+            callbackURL: `${window.location.origin}/?role=${role}`,
           });
         } else if (params.providerName === "github") {
           await authClient.signIn.social({
             provider: "github" as const,
-            callbackURL: window.location.origin + "/",
+            callbackURL: `${window.location.origin}/?role=${role}`,
           });
         }
       } catch (error) {
@@ -249,6 +249,7 @@ export const authProvider: AuthProvider = {
       image: parsedUser.image,
       role: parsedUser.role,
       imageCldPubId: parsedUser.imageCldPubId,
+      departmentId: parsedUser.departmentId,
     };
   },
 };

@@ -90,7 +90,7 @@ export type User = {
     role: UserRole;
     image?: string;
     imageCldPubId?: string;
-    department?: string;
+    departmentId?: number | null;
 };
 
 export type Schedule = {
@@ -129,5 +129,5 @@ export type SignUpPayload = {
     image?: string;
     imageCldPubId?: string;
     role: UserRole;
-    departmentId?: string;
+    departmentId?: number;
 };
