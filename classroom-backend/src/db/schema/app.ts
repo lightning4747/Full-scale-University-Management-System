@@ -103,6 +103,7 @@ export const enrollments = pgTable(
 
 export const departmentsRelations = relations(departments, ({ many }) => ({
   subjects: many(subjects),
+  users: many(user),
 }));
 
 export const subjectsRelations = relations(subjects, ({ one, many }) => ({

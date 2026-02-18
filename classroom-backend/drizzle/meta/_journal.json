@@ -15,6 +15,13 @@
       "when": 1769615547081,
       "tag": "0001_loose_spirit",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771440793000,
+      "tag": "0002_fix_enrollments_add_department",
+      "breakpoints": true
     }
   ]
 }

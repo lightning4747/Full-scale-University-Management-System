@@ -2,12 +2,14 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { departments } from "./app.js";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -27,6 +29,9 @@ export const user = pgTable("user", {
   image: text("image"),
   role: roleEnum("role").notNull().default("student"),
   imageCldPubId: text("image_cld_pub_id"),
+  departmentId: integer("department_id").references(() => departments.id, {
+    onDelete: "set null",
+  }),
 
   ...timestamps,
 });
@@ -94,9 +99,13 @@ export const verification = pgTable(
   })
 );
 
-export const usersRelations = relations(user, ({ many }) => ({
+export const usersRelations = relations(user, ({ one, many }) => ({
   sessions: many(session),
   accounts: many(account),
+  department: one(departments, {
+    fields: [user.departmentId],
+    references: [departments.id],
+  }),
 }));
 
 export const sessionsRelations = relations(session, ({ one }) => ({
