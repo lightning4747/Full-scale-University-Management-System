@@ -2,7 +2,7 @@ import express from "express";
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 
 import { fromNodeHeaders } from "better-auth/node";
-import { user } from "../db/schema/index.js";
+import { user, departments } from "../db/schema/index.js";
 import { db } from "../db/db.js";
 import { auth } from "../lib/auth.js";
 
@@ -68,7 +68,9 @@ router.get("/", async (req, res) => {
         console.error(`GET /users error: ${e}`);
         res.status(500).json({ error: 'Failed to get users' });
     }
-})
+});
+
+// Update current user's role
 router.post("/me/role", async (req, res) => {
     try {
         const session = await auth.api.getSession({
@@ -87,12 +89,6 @@ router.post("/me/role", async (req, res) => {
             return;
         }
 
-        // Only allow updating if current role is 'student' (default) or if it's a new signup flow
-        // For simplicity, we'll allow update if the user is authenticated. 
-        // In a strict environment, check if they are "student" before allowing upgrade to "teacher/admin" 
-        // or rely on the frontend logic + admin verification later.
-        // For this user story: "Call the backend API to update the current user's role"
-
         await db.update(user)
             .set({ role })
             .where(eq(user.id, session.user.id));
@@ -101,6 +97,57 @@ router.post("/me/role", async (req, res) => {
     } catch (e) {
         console.error("Update role error:", e);
         res.status(500).json({ error: "Failed to update role" });
+    }
+});
+
+// Update current user's department
+router.post("/me/department", async (req, res) => {
+    try {
+        const session = await auth.api.getSession({
+            headers: fromNodeHeaders(req.headers)
+        });
+
+        if (!session) {
+            res.status(401).json({ error: "Unauthorized" });
+            return;
+        }
+
+        const { departmentId } = req.body;
+
+        if (departmentId !== null && departmentId !== undefined) {
+            const deptId = Number(departmentId);
+            if (!Number.isFinite(deptId)) {
+                res.status(400).json({ error: "Invalid department ID" });
+                return;
+            }
+
+            // Verify the department exists
+            const [dept] = await db
+                .select({ id: departments.id })
+                .from(departments)
+                .where(eq(departments.id, deptId));
+
+            if (!dept) {
+                res.status(404).json({ error: "Department not found" });
+                return;
+            }
+
+            await db.update(user)
+                .set({ departmentId: deptId })
+                .where(eq(user.id, session.user.id));
+
+            res.json({ success: true, departmentId: deptId });
+        } else {
+            // Allow clearing department assignment
+            await db.update(user)
+                .set({ departmentId: null })
+                .where(eq(user.id, session.user.id));
+
+            res.json({ success: true, departmentId: null });
+        }
+    } catch (e) {
+        console.error("Update department error:", e);
+        res.status(500).json({ error: "Failed to update department" });
     }
 });
 

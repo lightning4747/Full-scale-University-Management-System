@@ -1,8 +1,14 @@
 import express from "express";
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, eq, getTableColumns, desc, sql } from "drizzle-orm";
 
-import { db } from "../db/db";
-import { classes, departments, enrollments, subjects, user } from "../db/schema/index.js";
+import { db } from "../db/db.js";
+import {
+  classes,
+  departments,
+  enrollments,
+  subjects,
+  user,
+} from "../db/schema/index.js";
 
 const router = express.Router();
 
@@ -32,6 +38,125 @@ const getEnrollmentDetails = async (enrollmentId: number) => {
 
   return enrollment;
 };
+
+// GET /enrollments — role-based isolation
+// Admin: all enrollments
+// Teacher: only enrollments in teacher's classes
+// Student: only their own enrollments
+router.get("/", async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const currentPage = Math.max(1, +page);
+    const limitPerPage = Math.max(1, +limit);
+    const offset = (currentPage - 1) * limitPerPage;
+
+    const role = req.user?.role;
+    const userId = req.user?.id;
+
+    // Build role-based filter
+    const filterConditions = [];
+
+    if (role === "teacher" && userId) {
+      // Teachers see enrollments only for their own classes
+      filterConditions.push(eq(classes.teacherId, userId));
+    } else if (role === "student" && userId) {
+      // Students see only their own enrollments
+      filterConditions.push(eq(enrollments.studentId, userId));
+    }
+    // Admin: no extra filter — sees everything
+
+    const whereClause =
+      filterConditions.length > 0 ? and(...filterConditions) : undefined;
+
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(enrollments)
+      .leftJoin(classes, eq(enrollments.classId, classes.id))
+      .where(whereClause);
+
+    const totalCount = countResult[0]?.count ?? 0;
+
+    const enrollmentsList = await db
+      .select({
+        ...getTableColumns(enrollments),
+        class: {
+          ...getTableColumns(classes),
+        },
+        subject: {
+          ...getTableColumns(subjects),
+        },
+        department: {
+          ...getTableColumns(departments),
+        },
+        student: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+          role: user.role,
+        },
+      })
+      .from(enrollments)
+      .leftJoin(classes, eq(enrollments.classId, classes.id))
+      .leftJoin(subjects, eq(classes.subjectId, subjects.id))
+      .leftJoin(departments, eq(subjects.departmentId, departments.id))
+      .leftJoin(user, eq(enrollments.studentId, user.id))
+      .where(whereClause)
+      .orderBy(desc(enrollments.createdAt))
+      .limit(limitPerPage)
+      .offset(offset);
+
+    res.status(200).json({
+      data: enrollmentsList,
+      pagination: {
+        page: currentPage,
+        limit: limitPerPage,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limitPerPage),
+      },
+    });
+  } catch (error) {
+    console.error("GET /enrollments error:", error);
+    res.status(500).json({ error: "Failed to fetch enrollments" });
+  }
+});
+
+// GET /enrollments/:id
+router.get("/:id", async (req, res) => {
+  try {
+    const enrollmentId = Number(req.params.id);
+    if (!Number.isFinite(enrollmentId)) {
+      return res.status(400).json({ error: "Invalid enrollment id" });
+    }
+
+    const enrollment = await getEnrollmentDetails(enrollmentId);
+
+    if (!enrollment) {
+      return res.status(404).json({ error: "Enrollment not found" });
+    }
+
+    // Role-based access check
+    const role = req.user?.role;
+    const userId = req.user?.id;
+
+    if (role === "teacher" && userId) {
+      // Teacher can only view enrollments in their own classes
+      if ((enrollment as any).class?.teacherId !== userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+    } else if (role === "student" && userId) {
+      // Student can only view their own enrollment
+      if (enrollment.studentId !== userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+    }
+
+    res.status(200).json({ data: enrollment });
+  } catch (error) {
+    console.error("GET /enrollments/:id error:", error);
+    res.status(500).json({ error: "Failed to fetch enrollment" });
+  }
+});
 
 // Create enrollment
 router.post("/", async (req, res) => {
@@ -144,6 +269,30 @@ router.post("/join", async (req, res) => {
   } catch (error) {
     console.error("POST /enrollments/join error:", error);
     res.status(500).json({ error: "Failed to join class" });
+  }
+});
+
+// DELETE /enrollments/:id — remove enrollment
+router.delete("/:id", async (req, res) => {
+  try {
+    const enrollmentId = Number(req.params.id);
+    if (!Number.isFinite(enrollmentId)) {
+      return res.status(400).json({ error: "Invalid enrollment id" });
+    }
+
+    const [deleted] = await db
+      .delete(enrollments)
+      .where(eq(enrollments.id, enrollmentId))
+      .returning();
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Enrollment not found" });
+    }
+
+    res.status(200).json({ data: deleted });
+  } catch (error) {
+    console.error("DELETE /enrollments/:id error:", error);
+    res.status(500).json({ error: "Failed to delete enrollment" });
   }
 });
 

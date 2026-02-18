@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import securityMiddleWare from "./middleware/security.js";
 import sessionMiddleware from "./middleware/session.js";
-import { isAdmin } from "./middleware/roleCheck.js";
 import { toNodeHandler } from "better-auth/node"
 import { auth } from "./lib/auth.js";
 import { webcrypto } from 'node:crypto';
@@ -12,6 +11,9 @@ import subjectsRouter from "./routes/subject.js";
 import usersRouter from "./routes/user.js";
 import classesRouter from "./routes/classes.js";
 import departmentsRouter from "./routes/departments.js";
+import enrollmentsRouter from "./routes/enrollments.js";
+import relationshipsRouter from "./routes/relationships.js";
+
 AgentAPI.config()
 
 if (!globalThis.crypto) {
@@ -77,6 +79,13 @@ app.use("/api/classes", classesRouter);
 // Departments routes
 // app.use("/api/departments", isAdmin, departmentsRouter);
 app.use("/api/departments", departmentsRouter);
+
+
+// Enrollment routes
+app.use("/api/enrollments", enrollmentsRouter);
+
+// Teacher-Student relationship routes (my-students, my-classes)
+app.use("/api", relationshipsRouter);
 
 // Root
 app.get("/", (_req, res) => {
