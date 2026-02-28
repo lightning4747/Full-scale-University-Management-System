@@ -9,7 +9,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { user } from "./auth.js";
+import { user } from "./auth";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -23,6 +23,12 @@ export const classStatusEnum = pgEnum("class_status", [
   "active",
   "inactive",
   "archived",
+]);
+
+export const enrollmentStatusEnum = pgEnum("enrollment_status", [
+  "ongoing", 
+  "completed", 
+  "dropped"
 ]);
 
 export const departments = pgTable("departments", {
@@ -89,6 +95,9 @@ export const enrollments = pgTable(
       .notNull()
       .references(() => classes.id, { onDelete: "cascade" }),
 
+      grade: integer("grade"), 
+      status: enrollmentStatusEnum("status").notNull().default("ongoing"),
+
     ...timestamps,
   },
   (table) => ({
@@ -100,6 +109,20 @@ export const enrollments = pgTable(
     ),
   })
 );
+
+export const materials = pgTable("materials", {
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  
+  classId: integer("class_id")
+    .notNull()
+    .references(() => classes.id, { onDelete: "cascade" }),
+    
+  title: varchar("title", { length: 255 }).notNull(),
+  url: text("url").notNull(), // Cloudinary or external link
+  type: varchar("type", { length: 50 }).notNull().default("pdf"), // pdf, doc, link, etc.
+
+  ...timestamps,
+});
 
 export const departmentsRelations = relations(departments, ({ many }) => ({
   subjects: many(subjects),
@@ -133,6 +156,13 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
   }),
   class: one(classes, {
     fields: [enrollments.classId],
+    references: [classes.id],
+  }),
+}));
+
+export const materialsRelations = relations(materials, ({ one }) => ({
+  class: one(classes, {
+    fields: [materials.classId],
     references: [classes.id],
   }),
 }));

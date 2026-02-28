@@ -9,7 +9,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { departments } from "./app.js";
+import { departments } from "./app";
 
 const timestamps = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
