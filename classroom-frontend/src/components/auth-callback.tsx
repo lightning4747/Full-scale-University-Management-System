@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useIsAuthenticated } from "@refinedev/core";
 import { authClient } from "@/lib/auth-client";
+import { User } from "@/types";
 
 export const AuthCallback = () => {
     const { data: authData } = useIsAuthenticated();
@@ -13,7 +14,7 @@ export const AuthCallback = () => {
 
             if (authData?.authenticated) {
                 const session = await authClient.getSession();
-                const user = session.data?.user as any;
+                const user = session.data?.user as unknown as User;
 
                 // 1. Handle Role Verification (Redirect Guard)
                 if (loginRole && user && user.role !== loginRole) {
