@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useLink, useGo, useNotification, useRefineOptions } from "@refinedev/core";
 import { authClient } from "@/lib/auth-client";
-import { UserRole } from "@/types";
+import { User } from "@/types";
 
 export const AdminSignInForm = () => {
     const [email, setEmail] = useState("");
@@ -50,7 +50,7 @@ export const AdminSignInForm = () => {
             return;
         }
 
-        if ((data?.user as any)?.role !== "admin") {
+        if ((data?.user as unknown as User | undefined)?.role !== "admin") {
             await authClient.signOut();
             open?.({
                 type: "error",
@@ -75,7 +75,7 @@ export const AdminSignInForm = () => {
                 "px-6",
                 "py-8",
                 "min-h-svh",
-                "bg-gradient-to-br",
+                "bg-linear-to-br",
                 "from-purple-50",
                 "to-indigo-100",
                 "dark:from-purple-950/20",

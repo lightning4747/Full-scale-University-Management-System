@@ -1,5 +1,4 @@
 import { createAuthClient } from "better-auth/react";
-import { USER_ROLES } from "../constants";
 
 // Better Auth client - connects to backend auth endpoints
 // The backend auth routes are at http://localhost:8000/api/auth/*

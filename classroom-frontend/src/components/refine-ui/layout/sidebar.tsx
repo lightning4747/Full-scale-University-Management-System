@@ -30,12 +30,13 @@ import {
 import { ChevronRight, ListIcon } from "lucide-react";
 import React from "react";
 import { authClient } from "@/lib/auth-client";
+import { User } from "@/types";
 
 export function Sidebar() {
   const { open } = useShadcnSidebar();
   const { menuItems, selectedKey } = useMenu();
   const { data: session } = authClient.useSession();
-  const userRole = (session?.user as any)?.role;
+  const userRole = (session?.user as User | undefined)?.role;
   const isAdmin = userRole === "admin";
   const isTeacher = userRole === "teacher";
 
@@ -358,10 +359,10 @@ function SidebarButton({
       variant="ghost"
       size="lg"
       className={cn(
-        "flex w-full items-center justify-start gap-2 py-2 !px-3 text-sm",
+        "flex w-full items-center justify-start gap-2 py-2 px-3! text-sm",
         {
           "bg-sidebar-primary": isSelected,
-          "hover:!bg-sidebar-primary/90": isSelected,
+          "hover:bg-sidebar-primary/90!": isSelected,
           "text-sidebar-primary-foreground": isSelected,
           "hover:text-sidebar-primary-foreground": isSelected,
         },

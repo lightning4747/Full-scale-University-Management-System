@@ -22,8 +22,8 @@ import {
   useRefineOptions,
   useRegister,
 } from "@refinedev/core";
-import { ROLE_OPTIONS, USER_ROLES } from "@/constants";
-import { UserRole } from "@/types";
+import { ROLE_OPTIONS } from "@/constants";
+import { UserRole, Department } from "@/types";
 import {
   Select,
   SelectContent,
@@ -38,7 +38,7 @@ export const SignUpForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [departmentId, setDepartmentId] = useState<string>("");
 
   useEffect(() => {
@@ -209,7 +209,7 @@ export const SignUpForm = () => {
                   <SelectValue placeholder="Select a department" />
                 </SelectTrigger>
                 <SelectContent>
-                  {departments && departments.map((dept: any) => (
+                  {departments && departments.map((dept) => (
                     <SelectItem key={dept.id} value={String(dept.id)}>
                       {dept.name}
                     </SelectItem>
