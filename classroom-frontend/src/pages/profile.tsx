@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLogout, useGo } from "@refinedev/core";
 import { authClient } from "@/lib/auth-client";
+import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +15,9 @@ type UserSession = {
     image?: string | null;
     role?: string;
     createdAt?: string | Date;
-    [key: string]: any;
+    department?: {
+        name?: string;
+    };
 };
 
 const Profile = () => {
@@ -94,7 +97,7 @@ const Profile = () => {
                         </Avatar>
                         <div className="space-y-1">
                             <CardTitle className="text-2xl">{user.name}</CardTitle>
-                            <Badge variant={getRoleColor(user.role) as any} className="mt-2 text-sm capitalize px-3 py-1">
+                            <Badge variant={getRoleColor(user.role) as "default" | "secondary" | "destructive" | "outline"} className="mt-2 text-sm capitalize px-3 py-1">
                                 {user.role || "User"}
                             </Badge>
                         </div>
@@ -124,7 +127,7 @@ const Profile = () => {
                                 <Building2 className="h-4 w-4" />
                                 <span>Department</span>
                             </div>
-                            <p className="font-medium">{(user as any).department?.name || "No Department Assigned"}</p>
+                            <p className="font-medium">{user.department?.name || "No Department Assigned"}</p>
                         </div>
 
                         <div className="space-y-1 p-3 rounded-lg border bg-card hover:bg-accent/5 transition-colors sm:col-span-2">

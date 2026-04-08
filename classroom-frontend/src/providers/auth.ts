@@ -51,7 +51,7 @@ export const authProvider: AuthProvider = {
         role: params.role || UserRole.STUDENT,
         imageCldPubId: params.imageCldPubId,
         departmentId: params.departmentId,
-      } as any);
+      } as Parameters<typeof authClient.signUp.email>[0]);
 
       if (error) {
         return {
@@ -142,7 +142,7 @@ export const authProvider: AuthProvider = {
       const user = data.user;
 
       // Role check: if a role was selected in the UI, verify it matches the user's actual role
-      if (params.role && (user as any).role !== params.role) {
+      if (params.role && (user as User).role !== params.role) {
         await authClient.signOut();
         return {
           success: false,

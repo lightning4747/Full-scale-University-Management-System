@@ -1,18 +1,11 @@
 import { useShow } from "@refinedev/core";
-import { useTable } from "@refinedev/react-table";
-import { ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
-import { useParams } from "react-router";
-import { DataTable } from "@/components/refine-ui/data-table/data-table";
-import { ShowButton } from "@/components/refine-ui/buttons/show";
 import {
   ShowView,
   ShowViewHeader,
 } from "@/components/refine-ui/views/show-view";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ClassDetails } from "@/types";
 import { AdvancedImage } from '@cloudinary/react';
@@ -43,12 +36,10 @@ const ClassesShow = () => {
         .split(' ')
         .filter(Boolean)
         .slice(0, 2)
-        .map((part) => part[0]?.toUpperCase())
+        .map((part: string) => part[0]?.toUpperCase())
         .join(' ');
 
     const placeholderUrl = `https://palcehold.co/600x400?text=${encodeURIComponent(teacherIntials || 'NA')}`;
-
-    const { } = classDetails
 
     return (
         <ShowView className='class-view class-show'>

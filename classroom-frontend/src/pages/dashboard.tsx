@@ -43,7 +43,7 @@ const roleColors = ["#f97316", "#0ea5e9", "#22c55e", "#a855f7"];
 
 const Dashboard = () => {
   const { data: session, isPending } = authClient.useSession();
-  const userRole = (session?.user as any)?.role;
+  const userRole = (session?.user as unknown as User | undefined)?.role;
 
   const Link = useLink();
   const { query: usersQuery } = useList<User>({
@@ -66,10 +66,10 @@ const Dashboard = () => {
     pagination: { mode: "off" },
   });
 
-  const users = usersQuery.data?.data ?? [];
-  const subjects = subjectsQuery.data?.data ?? [];
-  const departments = departmentsQuery.data?.data ?? [];
-  const classes = classesQuery.data?.data ?? [];
+  const users = useMemo(() => usersQuery.data?.data ?? [], [usersQuery.data?.data]);
+  const subjects = useMemo(() => subjectsQuery.data?.data ?? [], [subjectsQuery.data?.data]);
+  const departments = useMemo(() => departmentsQuery.data?.data ?? [], [departmentsQuery.data?.data]);
+  const classes = useMemo(() => classesQuery.data?.data ?? [], [classesQuery.data?.data]);
 
   const usersByRole = useMemo(() => {
     const counts = users.reduce<Record<string, number>>((acc, user) => {

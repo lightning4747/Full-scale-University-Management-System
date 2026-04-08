@@ -25,18 +25,7 @@ const buildHttpError = async (response: Response): Promise<HttpError> => {
   }
 }
 
-// Parse each Response body only once and reuse the parsed payload
-const parsedListResponseCache = new WeakMap<Response, Promise<ListResponse>>();
-
-const getParsedListResponse = (response: Response): Promise<ListResponse> => {
-  const cached = parsedListResponseCache.get(response);
-  if (cached) return cached;
-
-  const parsed = response.json() as Promise<ListResponse>;
-  parsedListResponseCache.set(response, parsed);
-  return parsed;
-};
-
+// Provider configuration options
 const options: CreateDataProviderOptions = {
   getList: {
     getEndpoint: ({ resource }) => resource === 'teachers' ? 'users' : resource,

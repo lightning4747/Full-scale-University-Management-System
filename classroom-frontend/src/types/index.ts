@@ -83,8 +83,8 @@ export enum UserRole {
 
 export type User = {
     id: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: string | Date;
+    updatedAt: string | Date;
     email: string;
     name: string;
     role: UserRole;
