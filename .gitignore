@@ -41,3 +41,9 @@ Thumbs.db
 
 .npmrc.local
 temp.txt
+
+session.txt
+
+# Sensitive files
+classroom-backend/apminsightdata/classroom-backend_10000/apminsight.json
+spec/
