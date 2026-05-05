@@ -1,8 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useCreate, useGetIdentity, useList } from "@refinedev/core";
+import { useCreate, useGetIdentity, useList, type HttpError } from "@refinedev/core";
 import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { CreateView } from "@/components/refine-ui/views/create-view";
@@ -35,11 +38,13 @@ type EnrollFormValues = z.infer<typeof enrollSchema>;
 
 const EnrollmentsCreate = () => {
   const navigate = useNavigate();
+  const { data: currentUser } = useGetIdentity<User>();
+  const [enrollmentError, setEnrollmentError] = useState<string | null>(null);
+
   const {
     mutateAsync: createEnrollment,
     mutation: { isPending },
   } = useCreate();
-  const { data: currentUser } = useGetIdentity<User>();
 
   const { query: classesQuery } = useList<ClassDetails>({
     resource: "classes",
@@ -60,22 +65,43 @@ const EnrollmentsCreate = () => {
 
   const selectedClassId = form.watch("classId");
 
+  useEffect(() => {
+    setEnrollmentError(null);
+  }, [selectedClassId]);
+
   const onSubmit = async (values: EnrollFormValues) => {
     if (!currentUser?.id) return;
 
-    const response = await createEnrollment({
-      resource: "enrollments",
-      values: {
-        classId: values.classId,
-        studentId: currentUser.id,
-      },
-    });
+    try {
+      setEnrollmentError(null);
+      const response = await createEnrollment({
+        resource: "enrollments",
+        values: {
+          classId: values.classId,
+          studentId: currentUser.id,
+        },
+        errorNotification: (error) => {
+          if ((error as HttpError)?.statusCode === 409) {
+            return false; // Disable global notification for conflict
+          }
+          return {
+            message: error?.message || "Failed to create enrollment",
+            type: "error",
+          };
+        },
+      });
 
-    navigate("/enrollments/confirm", {
-      state: {
-        enrollment: response?.data,
-      },
-    });
+      navigate("/enrollments/confirm", {
+        state: {
+          enrollment: response?.data,
+        },
+      });
+    } catch (error: any) {
+      if (error?.statusCode === 409) {
+        setEnrollmentError("You are already enrolled in this class.");
+      }
+      console.error("Enrollment error:", error);
+    }
   };
 
   const isSubmitDisabled =
@@ -155,6 +181,16 @@ const EnrollmentsCreate = () => {
                     />
                   </FormControl>
                 </FormItem>
+
+                {enrollmentError && (
+                  <Alert variant="destructive" className="bg-orange-50 border-orange-200 text-orange-900">
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                    <AlertTitle>Notice</AlertTitle>
+                    <AlertDescription>
+                      {enrollmentError}
+                    </AlertDescription>
+                  </Alert>
+                )}
 
                 <Button type="submit" size="lg" disabled={isSubmitDisabled}>
                   {isPending ? "Enrolling..." : "Enroll"}

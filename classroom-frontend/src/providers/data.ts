@@ -11,9 +11,10 @@ const buildHttpError = async (response: Response): Promise<HttpError> => {
   let message = 'Request failed';
 
   try {
-    const payload = (await response.json()) as { message?: string };
+    const payload = (await response.json()) as { message?: string; error?: string };
 
     if (payload?.message) message = payload.message;
+    else if (payload?.error) message = payload.error;
   }
   catch {
     //ignore errors 
@@ -102,6 +103,8 @@ const options: CreateDataProviderOptions = {
   }
 }
 
-const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options);
+const { dataProvider } = createDataProvider(BACKEND_BASE_URL, options, {
+  credentials: "include",
+});
 
 export { dataProvider };

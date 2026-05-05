@@ -9,6 +9,8 @@ import {
   subjects,
   user,
 } from "../db/schema/index.js";
+import { requireAuth } from "../middleware/session.js";
+import { requireRole } from "../middleware/roleCheck.js";
 
 const router = express.Router();
 
@@ -159,16 +161,19 @@ router.get("/:id", async (req, res) => {
 });
 
 // Create enrollment
-router.post("/", async (req, res) => {
+router.post("/", requireAuth, requireRole("student"), async (req, res) => {
+  console.log("POST /enrollments - Body:", req.body);
+  console.log("POST /enrollments - Query:", req.query);
+  console.log("POST /enrollments - User:", req.user?.id);
   try {
-    const { classId, studentId } = req.body;
+    const { classId } = req.body;
+    const studentId = req.user!.id;
 
-    if (!classId || !studentId) {
-      return res
-        .status(400)
-        .json({ error: "classId and studentId are required" });
+    if (!classId) {
+      return res.status(400).json({ error: "classId is required" });
     }
 
+    // Check if class exists
     const [classRecord] = await db
       .select()
       .from(classes)
@@ -176,13 +181,7 @@ router.post("/", async (req, res) => {
 
     if (!classRecord) return res.status(404).json({ error: "Class not found" });
 
-    const [student] = await db
-      .select()
-      .from(user)
-      .where(eq(user.id, studentId));
-
-    if (!student) return res.status(404).json({ error: "Student not found" });
-
+    // Check for existing enrollment (BE-08 requirement + DC-03 enforcement)
     const [existingEnrollment] = await db
       .select({ id: enrollments.id })
       .from(enrollments)
@@ -193,21 +192,23 @@ router.post("/", async (req, res) => {
         )
       );
 
-    if (existingEnrollment)
-      return res
-        .status(409)
-        .json({ error: "Student already enrolled in class" });
+    if (existingEnrollment) {
+      console.log("POST /enrollments - Conflict: Already enrolled");
+      return res.status(409).json({ error: "You are already enrolled in this class" });
+    }
 
     const [createdEnrollment] = await db
       .insert(enrollments)
       .values({ classId, studentId })
       .returning({ id: enrollments.id });
 
-    if (!createdEnrollment)
+    if (!createdEnrollment) {
       return res.status(500).json({ error: "Failed to create enrollment" });
+    }
 
     const enrollment = await getEnrollmentDetails(createdEnrollment.id);
 
+    console.log("POST /enrollments - Success: Enrollment created", createdEnrollment.id);
     res.status(201).json({ data: enrollment });
   } catch (error) {
     console.error("POST /enrollments error:", error);
@@ -216,14 +217,13 @@ router.post("/", async (req, res) => {
 });
 
 // Join class by invite code
-router.post("/join", async (req, res) => {
+router.post("/join", requireAuth, requireRole("student"), async (req, res) => {
   try {
-    const { inviteCode, studentId } = req.body;
+    const { inviteCode } = req.body;
+    const studentId = req.user!.id;
 
-    if (!inviteCode || !studentId) {
-      return res
-        .status(400)
-        .json({ error: "inviteCode and studentId are required" });
+    if (!inviteCode) {
+      return res.status(400).json({ error: "inviteCode is required" });
     }
 
     const [classRecord] = await db
@@ -231,15 +231,9 @@ router.post("/join", async (req, res) => {
       .from(classes)
       .where(eq(classes.inviteCode, inviteCode));
 
-    if (!classRecord) return res.status(404).json({ error: "Class not found" });
+    if (!classRecord) return res.status(404).json({ error: "Invalid invite code" });
 
-    const [student] = await db
-      .select()
-      .from(user)
-      .where(eq(user.id, studentId));
-
-    if (!student) return res.status(404).json({ error: "Student not found" });
-
+    // Check for existing enrollment
     const [existingEnrollment] = await db
       .select({ id: enrollments.id })
       .from(enrollments)
@@ -250,18 +244,18 @@ router.post("/join", async (req, res) => {
         )
       );
 
-    if (existingEnrollment)
-      return res
-        .status(409)
-        .json({ error: "Student already enrolled in class" });
+    if (existingEnrollment) {
+      return res.status(409).json({ error: "You are already enrolled in this class" });
+    }
 
     const [createdEnrollment] = await db
       .insert(enrollments)
       .values({ classId: classRecord.id, studentId })
       .returning({ id: enrollments.id });
 
-    if (!createdEnrollment)
+    if (!createdEnrollment) {
       return res.status(500).json({ error: "Failed to join class" });
+    }
 
     const enrollment = await getEnrollmentDetails(createdEnrollment.id);
 
