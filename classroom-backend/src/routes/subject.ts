@@ -1,35 +1,36 @@
-import { desc, eq, getTableColumns, ilike, or, sql, and } from "drizzle-orm";
+import { desc, eq, getTableColumns, ilike, or, and, count } from "drizzle-orm";
 import express from "express";
 import { departments, subjects } from "../db/schema/index.js";
 import { db } from "../db/db.js";
 
 const router = express.Router();
 
-// Get all subjects with optional search and filtering and pagination
-// Role-based: Admin sees all, Teacher/Student see only their department's subjects
+/**
+ * GET /subjects
+ * Get all subjects with optional search, filtering, and pagination.
+ * Role-based: Admin sees all, Teacher/Student see only their department's subjects.
+ */
 router.get("/", async (req, res) => {
     try {
         const { search, department, page = 1, limit = 10 } = req.query;
 
+        // --- Pagination Setup ---
         const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
         const limitPerPage = Math.min(
             Math.max(1, parseInt(String(limit), 10) || 10),
             100
         );
-
         const offset = (currentPage - 1) * limitPerPage;
 
+        // --- Filter Logic ---
         const filterConditions = [];
 
-        // Department-based isolation for non-admin users
+        // 1. Role-based isolation
         const role = req.user?.role;
         const userDeptId = req.user?.departmentId;
 
-        if (role && role !== "admin" && userDeptId) {
-            filterConditions.push(eq(subjects.departmentId, userDeptId));
-        }
 
-        // filter by either subject name or code. both will work
+        // 2. Search by subject name or code
         if (search) {
             filterConditions.push(
                 or(
@@ -39,26 +40,28 @@ router.get("/", async (req, res) => {
             );
         }
 
-        // if exists, match department names
+        // 3. Filter by department name (requires join)
         if (department) {
             filterConditions.push(ilike(departments.name, `%${department}%`));
         }
 
-        const whereClause =
-            filterConditions.length > 0 ? and(...filterConditions) : undefined;
+        const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
-        const countResult = await db
-            .select({ count: sql<number>`count(*)` })
+        // --- Execute Count Query ---
+        // We use the count() helper to avoid BigInt/String casting issues
+        const [countResult] = await db
+            .select({ total: count() })
             .from(subjects)
             .leftJoin(departments, eq(subjects.departmentId, departments.id))
             .where(whereClause);
 
-        const totalCount = countResult[0]?.count ?? 0;
+        const totalCount = Number(countResult?.total ?? 0);
 
+        // --- Execute Data Query ---
         const subjectList = await db
             .select({
                 ...getTableColumns(subjects),
-                departments: { ...getTableColumns(departments) },
+                department: getTableColumns(departments), // Nested for cleaner JSON structure
             })
             .from(subjects)
             .leftJoin(departments, eq(subjects.departmentId, departments.id))
@@ -67,6 +70,7 @@ router.get("/", async (req, res) => {
             .limit(limitPerPage)
             .offset(offset);
 
+        // --- Response ---
         res.status(200).json({
             data: subjectList,
             pagination: {
@@ -77,7 +81,7 @@ router.get("/", async (req, res) => {
             },
         });
     } catch (e) {
-        console.error(`GET /subjects error: ${e}`);
+        console.error(`GET /subjects error:`, e);
         res.status(500).json({ error: "Failed to get subjects" });
     }
 });

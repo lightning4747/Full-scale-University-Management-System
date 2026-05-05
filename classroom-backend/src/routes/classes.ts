@@ -42,10 +42,6 @@ router.get("/", async (req, res) => {
     const role = req.user?.role;
     const userDeptId = req.user?.departmentId;
 
-    if (role && role !== "admin" && userDeptId) {
-      filterConditions.push(eq(subjects.departmentId, userDeptId));
-    }
-
     if (search) {
       filterConditions.push(
         or(
